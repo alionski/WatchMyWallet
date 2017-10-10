@@ -1,0 +1,72 @@
+<resources>
+    <string name="app_name">WatchMyWallet</string>
+    <string name="preference_file_key">se.mah.aliona.watchmywallet.PREFERENCE_FILE_KEY</string>
+    <string name="username">USERNAME</string>
+    <string name="usersurname">USERSURNAME</string>
+
+    <!-- Database specific-->
+    <string-array name="expenditure_categories">
+        <item>Food</item>
+        <item>Leisure</item>
+        <item>Travels</item>
+        <item>Housing</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="income_categories">
+        <item>Salary</item>
+        <item>Other</item>
+    </string-array>
+
+    <string name="add_transfer_dialog_message">Choose a transfer type to add:</string>
+    <string-array name="add_new_transfer">
+        <item>Expenditure</item>
+        <item>Income</item>
+    </string-array>
+
+    <!-- Welcome Fragment -->
+    <string name="welcome_message">Welcome to WatchMyWallet, new user! \nPlease enter your name and surname below:</string>
+    <string name="input_name">Name</string>
+    <string name="input_surame">Surname</string>
+    <string name="button_continue">Continue</string>
+
+    <!--Settings Fragment-->
+    <string name="settings_message">Having an identity crisis, ** **? \nWant to hide your taxes? \nAnother interesting reason? \nChange your name and surname here:</string>
+    <string name="settings_input_name">New Name</string>
+    <string name="settings_input_surame">New Surname</string>
+    <string name="settings_button_done">Go for it!</string>
+
+    <!--Drawer-->
+    <string name="drawer_open">Drawer open</string>
+    <string name="drawer_closed">Drawer closed</string>
+
+    <!--AddExpenditureFragment-->
+    <string name="title_new_exp_fragment">Title:</string>
+    <string name="amount_new_exp_fragment">Cost:</string>
+    <string name="category_new_exp_fragment">Category:</string>
+    <string name="date_new_exp_fragment">Date:</string>
+    <string name="button_done_new_exp_fragment">Done!</string>
+
+    <!--AddIncomeFragment-->
+    <string name="title_new_income_fragment">Title:</string>
+    <string name="amount_new_income_fragment">Amount:</string>
+    <string name="category_new_income_fragment">Category:</string>
+    <string name="date_new_income_fragment">Date:</string>
+    <string name="button_done_new_income_fragment">Done!</string>
+
+    <!--ExpenditureFragment-->
+    <string name="expenditure_checkbox_all_time">All time</string>
+    <string name="expenditure_checkbox_all_types">All types</string>
+    <string name="expenditure_button_start_date">From date</string>
+    <string name="expenditure_button_end_date">End date</string>
+
+    <!--All fragments with lists-->
+    <string name="select_time_span_text_view">Select time span:</string>
+    <string name="select_category_text_view">Select category:</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="statistics_intro_message">Here is how your economy looks, *****. Choose to see for all times or specific dates.</string>
+    <string name="title_activity_scanner">ScannerActivity</string>
+</resources>

@@ -1,0 +1,126 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="layout.TransfersFragment">
+
+    <android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+        <CheckBox
+            android:id="@+id/transfers_check_box_select_all_time"
+            android:layout_width="97dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="-213dp"
+            android:layout_marginStart="16dp"
+            android:text="@string/expenditure_checkbox_all_time"
+            app:layout_constraintBaseline_toBaselineOf="@+id/transfers_button_start_date"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <Button
+            android:id="@+id/transfers_button_start_date"
+            android:layout_width="115dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="32dp"
+            android:backgroundTint="@color/colorAccent"
+            android:elevation="0dp"
+            android:text="@string/expenditure_button_start_date"
+            app:layout_constraintHorizontal_bias="0.956"
+            app:layout_constraintLeft_toRightOf="@+id/transfers_check_box_select_all_time"
+            app:layout_constraintRight_toLeftOf="@+id/transfers_button_end_date"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/transfers_spinner_transfer_type"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/transfers_button_end_date"
+            android:layout_width="115dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:backgroundTint="@color/colorAccent"
+            android:text="@string/expenditure_button_end_date"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBaseline_toBaselineOf="@+id/transfers_button_start_date"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="@+id/transfers_spinner_transfer_category"
+            app:layout_constraintHorizontal_bias="1.0" />
+
+        <CheckBox
+            android:id="@+id/transfers_check_box_select_all_transfer_types"
+            android:layout_width="97dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:text="@string/expenditure_checkbox_all_types"
+            app:layout_constraintBaseline_toBaselineOf="@+id/transfers_spinner_transfer_type"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/transfers_spinner_transfer_type" />
+
+        <Spinner
+            android:id="@+id/transfers_spinner_transfer_type"
+            android:layout_width="115dp"
+            android:layout_height="40dp"
+            android:background="@color/lightGray"
+            android:padding="5dp"
+            android:textAlignment="center"
+            app:layout_constraintBaseline_toBaselineOf="@+id/transfers_spinner_transfer_category"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="@+id/transfers_button_start_date"
+            android:layout_marginLeft="0dp"
+            app:layout_constraintLeft_toLeftOf="@+id/transfers_button_start_date"
+            app:layout_constraintHorizontal_bias="0.0" />
+
+        <Spinner
+            android:id="@+id/transfers_spinner_transfer_category"
+            android:layout_width="115dp"
+            android:layout_height="40dp"
+            android:background="@color/lightGray"
+            android:padding="5dp"
+            android:textAlignment="center"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintLeft_toRightOf="@+id/transfers_spinner_transfer_type"
+            app:layout_constraintTop_toBottomOf="@+id/transfers_button_end_date"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/transfers_list_view" />
+
+        <ListView
+            android:id="@+id/transfers_list_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:clickable="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/transfers_spinner_transfer_type" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floating_btn_add_transfer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        app:fabSize="normal"
+        app:layout_anchorGravity="bottom|right|end"
+        app:srcCompat="@drawable/ic_add_black_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>

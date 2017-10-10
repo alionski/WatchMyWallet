@@ -1,0 +1,118 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="layout.StatisticsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/stats_message_top"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:padding="10dp"
+                android:text="@string/statistics_intro_message"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_constraintLeft_creator="1"
+                tools:layout_constraintRight_creator="1"
+                tools:layout_constraintTop_creator="1" />
+
+            <CheckBox
+                android:id="@+id/stats_check_box_select_all_time"
+                android:layout_width="97dp"
+                android:layout_height="45dp"
+                android:text="@string/expenditure_checkbox_all_time"
+                app:layout_constraintBaseline_toBaselineOf="@+id/stats_button_start_date"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/stats_button_start_date" />
+
+            <Button
+                android:id="@+id/stats_button_start_date"
+                android:layout_width="115dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="26dp"
+                android:backgroundTint="@color/colorAccent"
+                android:text="@string/expenditure_button_start_date"
+                app:layout_constraintLeft_toRightOf="@+id/stats_check_box_select_all_time"
+                app:layout_constraintRight_toLeftOf="@+id/stats_button_end_date"
+                app:layout_constraintTop_toBottomOf="@+id/stats_message_top"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="8dp" />
+
+            <Button
+                android:id="@+id/stats_button_end_date"
+                android:layout_width="115dp"
+                android:layout_height="48dp"
+                android:backgroundTint="@color/colorAccent"
+                android:text="@string/expenditure_button_end_date"
+                app:layout_constraintBaseline_toBaselineOf="@+id/stats_button_start_date"
+                app:layout_constraintLeft_toRightOf="@+id/stats_button_start_date"
+                app:layout_constraintRight_toRightOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/stats_balance_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Balance:"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/stats_button_start_date" />
+
+        <com.github.mikephil.charting.charts.HorizontalBarChart
+            android:id="@+id/horizontal_chart"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="30dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="30dp"
+            android:layout_weight="0.20"
+            android:background="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tran_detail_value_title"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <include layout="@layout/fragment_statistics_middle"></include>
+        <include layout="@layout/fragment_statistics_bottom"></include>
+
+    </LinearLayout>
+
+
+
+
+</ScrollView>

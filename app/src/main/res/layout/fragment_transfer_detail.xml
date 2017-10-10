@@ -1,0 +1,100 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingEnd="20dp"
+    app:layout_gravity="right"
+    tools:context="layout.TransferDetailFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <android.support.v7.widget.GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:columnCount="2"
+        app:rowCount="4">
+
+        <TextView
+            android:id="@+id/trans_detail_label_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:paddingEnd="20dp"
+            android:text="@string/title_new_income_fragment"
+            android:textColor="@color/wallet_bright_foreground_holo_light"
+            android:textStyle="bold"
+            app:layout_gravity="right" />
+
+        <TextView
+            android:id="@+id/trans_detail_value_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:paddingStart="20dp"
+            app:layout_gravity="start"
+            tools:text="**********" />
+
+        <TextView
+            android:id="@+id/trans_detail_label_sum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:paddingEnd="20dp"
+            android:text="@string/amount_new_income_fragment"
+            android:textColor="@color/wallet_bright_foreground_holo_light"
+            android:textStyle="bold"
+            app:layout_gravity="right" />
+
+        <TextView
+            android:id="@+id/trans_detail_value_sum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:paddingStart="20dp"
+            android:text="TextView"
+            app:layout_gravity="start" />
+
+        <TextView
+            android:id="@+id/trans_detail_label_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:paddingEnd="20dp"
+            android:text="@string/date_new_income_fragment"
+            android:textColor="@color/wallet_bright_foreground_holo_light"
+            android:textStyle="bold"
+            app:layout_gravity="right" />
+
+        <TextView
+            android:id="@+id/trans_detail_value_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:paddingStart="20dp"
+            android:text="TextView"
+            app:layout_gravity="start" />
+
+        <TextView
+            android:id="@+id/trans_detail_label_cat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:paddingEnd="20dp"
+            android:text="@string/category_new_income_fragment"
+            android:textColor="@color/wallet_bright_foreground_holo_light"
+            android:textStyle="bold"
+            app:layout_gravity="right" />
+
+        <TextView
+            android:id="@+id/trans_detail_value_cat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:paddingStart="20dp"
+            android:text="TextView"
+            app:layout_gravity="start" />
+    </android.support.v7.widget.GridLayout>
+
+</FrameLayout>
