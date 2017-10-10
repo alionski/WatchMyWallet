@@ -19,6 +19,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -32,6 +33,8 @@ import se.mah.aliona.watchmywallet.database.Contract;
  * A simple {@link Fragment} subclass.
  */
 public class AddExpenditureFragment extends BaseFragment {
+    private TextView mBarcodeLabel;
+    private TextView mBarcodeValue;
     private EditText mEtTitle;
     private EditText mEtCost;
     private Spinner mSpinnerCategory;
@@ -69,6 +72,11 @@ public class AddExpenditureFragment extends BaseFragment {
     }
 
     private void initialiseUI(View view) {
+        mBarcodeLabel = view.findViewById(R.id.barcode_label_text_view);
+        mBarcodeLabel.setVisibility(View.INVISIBLE);
+        mBarcodeValue = view.findViewById(R.id.barcode_value_text_view);
+        mBarcodeValue.setVisibility(View.INVISIBLE);
+
         mEtTitle = view.findViewById(R.id.edit_text_title_new_exp_fragment);
         mEtCost = view.findViewById(R.id.edit_text_sum_new_exp_fragment);
         mSpinnerCategory = view.findViewById(R.id.spinner_cat_new_exp_fragment);
