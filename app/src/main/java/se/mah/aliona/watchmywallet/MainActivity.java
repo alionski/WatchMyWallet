@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -30,9 +31,12 @@ import android.widget.TextView;
 
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieEntry;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
 
 import java.util.ArrayList;
 
+import barcode.BarcodeCaptureActivity;
 import layout.AddExpenditureFragment;
 import layout.AddIncomeFragment;
 import layout.AddNewTransferPopup;
@@ -250,6 +254,7 @@ public class MainActivity extends BaseActivity implements AddNewTransferPopup.Ca
                 if (CURRENT_FRAGMENT == TRANSFERS) {
                     transaction.addToBackStack("back_to_transfers");
                 }
+
                 transaction.commit();
 
                 setTitle("Add New Expenditure");
@@ -521,21 +526,63 @@ public class MainActivity extends BaseActivity implements AddNewTransferPopup.Ca
     }
 
     public void scanBarcode() {
-        Intent intent = new Intent(MainActivity.this, ScannerActivity.class);
-        startActivityForResult(intent, SCANNER_INTENT );
+        Intent intent = new Intent(MainActivity.this, BarcodeCaptureActivity.class);
+        intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
+        intent.putExtra(BarcodeCaptureActivity.UseFlash, false);
+        startActivityForResult(intent, SCANNER_INTENT);
     }
 
+    /**
+     * Called when an activity you launched exits, giving you the requestCode
+     * you started it with, the resultCode it returned, and any additional
+     * data from it.  The <var>resultCode</var> will be
+     * {@link #RESULT_CANCELED} if the activity explicitly returned that,
+     * didn't return any result, or crashed during its operation.
+     * <p/>
+     * <p>You will receive this call immediately before onResume() when your
+     * activity is re-starting.
+     * <p/>
+     *
+     * @param requestCode The integer request code originally supplied to
+     *                    startActivityForResult(), allowing you to identify who this
+     *                    result came from.
+     * @param resultCode  The integer result code returned by the child activity
+     *                    through its setResult().
+     * @param data        An Intent, which can return result data to the caller
+     *                    (various data can be attached to Intent "extras").
+     * @see #startActivityForResult
+     * @see #createPendingResult
+     * @see #setResult(int)
+     */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == SCANNER_INTENT) {
             // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                // The user picked a contact.
-                // The Intent's data Uri identifies which contact was selected.
+            if (resultCode == CommonStatusCodes.SUCCESS) {
+                if (data != null) {
+                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
 
-                // Do something with the contact here (bigger example below)
+
+                    AddExpenditureFragment exp =
+                            (AddExpenditureFragment) getSupportFragmentManager().findFragmentByTag(NEW_EXP_ID);
+                    exp.setBarcodeResult(barcode.displayValue);
+
+                    Log.i(this.toString(), "ON ACTIVITY RESULT  " + barcode.displayValue);
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.fragment_main_holder),
+                            R.string.barcode_success, Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                    Log.d(this.toString(), "Barcode read: " + barcode.displayValue);
+                } else {
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.fragment_main_holder),
+                            String.format(getString(R.string.barcode_error),
+                                    CommonStatusCodes.getStatusCodeString(resultCode)),
+                            Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                }
             }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

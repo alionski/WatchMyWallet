@@ -10,12 +10,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:text="@string/title_new_exp_fragment"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/edit_text_title_new_exp_fragment"
         app:layout_constraintLeft_toLeftOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginStart="16dp" />
+        tools:layout_constraintLeft_creator="1" />
 
     <EditText
         android:id="@+id/edit_text_title_new_exp_fragment"
@@ -35,11 +37,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:text="@string/amount_new_exp_fragment"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/edit_text_sum_new_exp_fragment"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="16dp" />
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <EditText
         android:id="@+id/edit_text_sum_new_exp_fragment"
@@ -58,16 +62,18 @@
         android:id="@+id/text_view_cat_new_exp_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="7dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="7dp"
+        android:layout_marginStart="16dp"
         android:text="@string/category_new_exp_fragment"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/spinner_cat_new_exp_fragment"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/spinner_cat_new_exp_fragment"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="7dp" />
+        app:layout_constraintRight_toLeftOf="@+id/spinner_cat_new_exp_fragment" />
 
     <Spinner
         android:id="@+id/spinner_cat_new_exp_fragment"
@@ -87,12 +93,14 @@
         android:id="@+id/text_view_date_new_exp_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/date_new_exp_fragment"
-        android:textSize="18sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/button_pick_date_new_exp_fragment"
         android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="16dp"
+        android:text="@string/date_new_exp_fragment"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/button_pick_date_new_exp_fragment"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
         android:id="@+id/button_pick_date_new_exp_fragment"
@@ -109,7 +117,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp" />
 
-    <Button
+    <layout.util.CustomButton
         android:id="@+id/button_done_new_exp_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -142,27 +150,31 @@
         android:id="@+id/barcode_label_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/expenditure_barcode_label"
-        android:textSize="18sp"
         android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/expenditure_barcode_label"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/barcode_value_text_view"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="16dp" />
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <TextView
         android:id="@+id/barcode_value_text_view"
         android:layout_width="198dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="16dp"
         android:layout_marginTop="23dp"
         android:ems="10"
-        android:padding="10dp"
+        android:paddingBottom="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="10dp"
         android:text="TextView"
         android:textSize="18sp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_scan_barcode"
-        android:layout_marginRight="16dp"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toRightOf="@+id/barcode_label_text_view"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintHorizontal_bias="1.0" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_scan_barcode" />
 
 </android.support.constraint.ConstraintLayout>

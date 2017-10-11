@@ -24,6 +24,7 @@ import android.widget.TextView;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import layout.util.CustomButton;
 import se.mah.aliona.watchmywallet.MainActivity;
 import se.mah.aliona.watchmywallet.R;
 import se.mah.aliona.watchmywallet.beans.Expenditure;
@@ -40,13 +41,14 @@ public class AddExpenditureFragment extends BaseFragment {
     private Spinner mSpinnerCategory;
     private ImageButton mScannerButton;
     private Button mButtonPickDate;
-    private Button mButtonDone;
+    private CustomButton mButtonDone;
 
     private Expenditure mNewExpenditure;
     private String mTitle;
     private long mDate;
     private int mCategory;
     private double mAmount;
+    private long mBarcode;
 
     public AddExpenditureFragment() {
         // Required empty public constructor
@@ -73,9 +75,10 @@ public class AddExpenditureFragment extends BaseFragment {
 
     private void initialiseUI(View view) {
         mBarcodeLabel = view.findViewById(R.id.barcode_label_text_view);
-        mBarcodeLabel.setVisibility(View.INVISIBLE);
         mBarcodeValue = view.findViewById(R.id.barcode_value_text_view);
+
         mBarcodeValue.setVisibility(View.INVISIBLE);
+        mBarcodeLabel.setVisibility(View.INVISIBLE);
 
         mEtTitle = view.findViewById(R.id.edit_text_title_new_exp_fragment);
         mEtCost = view.findViewById(R.id.edit_text_sum_new_exp_fragment);
@@ -155,6 +158,13 @@ public class AddExpenditureFragment extends BaseFragment {
                 "\n" + mNewExpenditure.getExpDate());
 
         return true;
+    }
+
+    public void setBarcodeResult(String displayValue) {
+        mBarcode = Long.parseLong(displayValue);
+        mBarcodeLabel.setVisibility(View.VISIBLE);
+        mBarcodeValue.setVisibility(View.VISIBLE);
+        mBarcodeValue.setText(displayValue);
     }
 
     private class DatePickerListener implements DatePickerDialog.OnDateSetListener {
