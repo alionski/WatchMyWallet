@@ -19,6 +19,8 @@ import se.mah.aliona.watchmywallet.R;
  * A simple {@link Fragment} subclass.
  */
 public class SettingsFragment extends BaseFragment implements View.OnClickListener {
+    private static final String NEW_NAME = "new_name";
+    private static final String NEW_SURNAME = "new_surname";
     private TextView mMessageText;
     private EditText mNewName;
     private EditText mNewSurname;
@@ -31,19 +33,33 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         // Required empty public constructor
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
 
-        if (context instanceof MainActivity){
-            mMainActivity = (MainActivity) context;
-        }
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.i(this.toString(), "ON START");
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(this.toString(), "ON RESUME");
+    }
+
+    @Override
+    protected void restoreState(Bundle savedInstanceState) {
+        Log.i(this.toString(), "Saved instance is not null!!!!!!!!!!!!!!!");
+        mNewNameString = savedInstanceState.getString(NEW_NAME);
+        mNewSurnameString = savedInstanceState.getString(NEW_SURNAME);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(this.toString(), "ON CREATE VIEW");
+        if (savedInstanceState != null) {
+            restoreState(savedInstanceState);
+        }
         cleanContainer(container);
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
@@ -58,6 +74,13 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
         mNewName = view.findViewById(R.id.et_settings_name);
         mNewSurname = view.findViewById(R.id.et_settings_surname);
+
+        if (mNewNameString != null && !mNewNameString.equals("")) {
+            mNewName.setText(mNewNameString);
+        }
+        if (mNewSurnameString != null && !mNewSurnameString.equals("")) {
+            mNewSurname.setText(mNewSurnameString);
+        }
 
         mDoneButton = view.findViewById(R.id.btn_settings_done);
         mDoneButton.setOnClickListener(this);
@@ -85,8 +108,35 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         mMainActivity.initialisePreferences();
 
         setUserName(mMainActivity.getUserName(), mMainActivity.getUserSurname());
+
         setMessage();
+        cleanUI();
     }
 
+    private void cleanUI() {
+        mNewNameString = null;
+        mNewSurnameString = null;
+        mNewName.setText("");
+        mNewSurname.setText("");
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(this.toString(), "ON PAUSE");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i(this.toString(), "ON STOP");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.i(this.toString(), "ON SAVE INSTANCE");
+        super.onSaveInstanceState(outState);
+        outState.putString(NEW_NAME, mNewNameString);
+        outState.putString(NEW_SURNAME, mNewSurnameString);
+    }
 }

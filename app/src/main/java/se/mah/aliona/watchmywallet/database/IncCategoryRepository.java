@@ -17,7 +17,6 @@ public class IncCategoryRepository {
         this.ctrl = ctrl;
     }
 
-    // db operations methods follow here
     public Cursor getAllCategories() {
         SQLiteDatabase db = ctrl.openDatabase();
         String sortOrder =
@@ -29,7 +28,6 @@ public class IncCategoryRepository {
                 null,
                 null,
                 sortOrder);
-//        ctrl.closeDatabase();
         return cursor;
     }
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -12,7 +13,7 @@ import android.widget.EditText;
 
 import layout.util.CustomButton;
 
-public class WelcomeActivity extends BaseActivity {
+public class WelcomeActivity extends AppCompatActivity {
     private EditText mEtName;
     private EditText mEtSurname;
     private CustomButton mBtnContinue;

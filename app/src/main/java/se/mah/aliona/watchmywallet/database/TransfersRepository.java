@@ -12,9 +12,6 @@ import android.util.Log;
  */
 
 public class TransfersRepository {
-    private Bundle bundle;
-    public static final int CURSOR_ID = -1;
-    public static final String CURSOR_FROM = "CURSOR_FROM";
     public static final String UNION_COLUMN_ID = "_id";
     public static final String UNION_COLUMN_TITLE = "title";
     public static final String UNION_COLUMN_AMOUNT = "amount";
@@ -24,26 +21,9 @@ public class TransfersRepository {
     public static final String INCOME_SOURCE = "'income'";
     public static final String EXP_SOURCE = "'expenditure'";
     private DatabaseController ctrl;
-    private SQLiteDatabase db;
-    private SQLiteOpenHelper dbHelper;
-    private String[] allExpenditureColumns =
-            {Contract.Exp._ID,
-                    Contract.Exp.COLUMN_NAME_TITLE,
-                    Contract.Exp.COLUMN_NAME_COST,
-                    Contract.Exp.COLUMN_NAME_DATE,
-                    Contract.Exp.COLUMN_NAME_CATEGORY};
-    private String[] allIncomeColumns =
-            {Contract.Inc._ID,
-                    Contract.Inc.COLUMN_NAME_TITLE,
-                    Contract.Inc.COLUMN_NAME_AMOUNT,
-                    Contract.Inc.COLUMN_NAME_DATE,
-                    Contract.Inc.COLUMN_NAME_CATEGORY};
 
     public TransfersRepository(DatabaseController ctrl) {
         this.ctrl = ctrl;
-        dbHelper = ctrl.getDatabaseHelper();
-        bundle = new Bundle();
-        bundle.putInt(CURSOR_FROM, CURSOR_ID);
     }
 
     public Cursor getAllTransfersList() {
@@ -76,15 +56,14 @@ public class TransfersRepository {
                         Contract.IncCats._ID +
                 " ORDER BY " + UNION_COLUMN_DATE +  " DESC";
         Cursor cursor = db.rawQuery(allTransfersQuery, null);
-        Log.i(this.toString(), String.valueOf(CURSOR_ID));
-        cursor.respond(bundle);
+//        Log.i(this.toString(), String.valueOf(CURSOR_ID));
         return cursor;
     }
 
     public Cursor getAllTransfersList(long start, long end) {
-        Log.i(this.toString(), "getAllTransfersList(long start, long end) reached");
-        String[] params = new String[]{ String.valueOf(start), String.valueOf(end), String.valueOf(start), String.valueOf(end)  };
         SQLiteDatabase db = ctrl.openDatabase();
+//        Log.i(this.toString(), "getAllTransfersList(long start, long end) reached");
+        String[] params = new String[]{ String.valueOf(start), String.valueOf(end), String.valueOf(start), String.valueOf(end)  };
         String allTransfersQuery =
                         "SELECT " +
                         "exp." + Contract.Exp._ID + " as " + UNION_COLUMN_ID + ", " +
@@ -120,7 +99,6 @@ public class TransfersRepository {
                         "income." + Contract.Inc.COLUMN_NAME_DATE + "<=?" +
                     "ORDER BY " + UNION_COLUMN_DATE +  " DESC";
         Cursor c = db.rawQuery(allTransfersQuery, params);
-        c.respond(bundle);
         return c;
     }
 
@@ -140,14 +118,14 @@ public class TransfersRepository {
                         "SUM(income." + Contract.Inc.COLUMN_NAME_AMOUNT+ ") as " + UNION_COLUMN_AMOUNT + " " +
                     "FROM " + Contract.Inc.TABLE_NAME + " income " +
                     "GROUP BY " + UNION_COLUMN_SOURCE;
-        Log.i(this.toString(), query);
+//        Log.i(this.toString(), query);
         Cursor c = db.rawQuery(query, null);
         return c;
     }
 
     public Cursor getDataForHorizontalChart(long start, long end) {
-        String[] params = new String[]{ String.valueOf(start), String.valueOf(end), String.valueOf(start), String.valueOf(end) };
         SQLiteDatabase db = ctrl.openDatabase();
+        String[] params = new String[]{ String.valueOf(start), String.valueOf(end), String.valueOf(start), String.valueOf(end) };
         String allTransfersQuery =
                 "SELECT " +
                         "exp." + Contract.Exp._ID + " as " + UNION_COLUMN_ID + ", " +
@@ -168,14 +146,14 @@ public class TransfersRepository {
                         "income." + Contract.Inc.COLUMN_NAME_DATE + ">=? AND " +
                         "income." + Contract.Inc.COLUMN_NAME_DATE + "<=?" +
                     "GROUP BY " + UNION_COLUMN_SOURCE;
-        Log.i(this.toString(), allTransfersQuery);
+//        Log.i(this.toString(), allTransfersQuery);
         Cursor c = db.rawQuery(allTransfersQuery, params);
         return c;
     }
 
     public Cursor getDataForExpPieChart(long start, long end) {
-        String[] params = new String[]{ String.valueOf(start), String.valueOf(end) };
         SQLiteDatabase db = ctrl.openDatabase();
+        String[] params = new String[]{ String.valueOf(start), String.valueOf(end) };
         String query =
                 "SELECT " + Contract.ExpCats.COLUMN_EXP_CAT_NAME  + ", " +
                         Contract.Exp.COLUMN_NAME_COST + " " +
@@ -188,7 +166,6 @@ public class TransfersRepository {
                     "exp." + Contract.Exp.COLUMN_NAME_DATE + "<=? " +
                 "GROUP BY " + Contract.ExpCats.COLUMN_EXP_CAT_NAME;
         Cursor c = db.rawQuery(query, params);
-        c.respond(bundle);
         return c;
     }
 
@@ -203,13 +180,12 @@ public class TransfersRepository {
                         Contract.ExpCats._ID + " " +
                         "GROUP BY " + Contract.ExpCats.COLUMN_EXP_CAT_NAME;
         Cursor c = db.rawQuery(query, null);
-        c.respond(bundle);
         return c;
     }
 
     public Cursor getDataForIncPieChart(long start, long end) {
-        String[] params = new String[]{ String.valueOf(start), String.valueOf(end) };
         SQLiteDatabase db = ctrl.openDatabase();
+        String[] params = new String[]{ String.valueOf(start), String.valueOf(end) };
         String query =
                 "SELECT " + Contract.IncCats.COLUMN_INC_CAT_NAME + ", " +
                         Contract.Inc.COLUMN_NAME_AMOUNT + " " +
@@ -222,7 +198,6 @@ public class TransfersRepository {
                         "exp." + Contract.Inc.COLUMN_NAME_DATE + "<=? " +
                         "GROUP BY " + Contract.IncCats.COLUMN_INC_CAT_NAME;
         Cursor c = db.rawQuery(query, params);
-        c.respond(bundle);
         return c;
     }
 
@@ -237,15 +212,6 @@ public class TransfersRepository {
                         Contract.IncCats._ID + " " +
                         "GROUP BY " + Contract.IncCats.COLUMN_INC_CAT_NAME;
         Cursor c = db.rawQuery(query, null);
-        c.respond(bundle);
         return c;
-    }
-
-    public void open() throws SQLException {
-        db = dbHelper.getWritableDatabase();
-    }
-
-    public void close() {
-        dbHelper.close();
     }
 }

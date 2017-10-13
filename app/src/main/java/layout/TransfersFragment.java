@@ -52,7 +52,7 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
     private static final String TRANSFER_CATEGORY = "transfer_category";
 
 
-    public static final int ALL = -1;
+    public static final int ALL = 0;
     public static final int EXPENDITURES = 1;
     public static final int INCOME = 2;
 
@@ -75,8 +75,8 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
     private String[] mTransferTypes = {"Expenses", "Income"};
     private Spinner mTransferTypesSpinner;
     private Spinner mTransferCatSpinner;
-    private int mTypeToShow = -1;
-    private int mCatToShow = -1;
+    private int mTypeToShow = 0;
+    private int mCatToShow = 0;
 
     private ListView mTransfersListView;
 
@@ -87,38 +87,6 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
 
     public TransfersFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.i(this.toString(), "ON ACTIVITY CREATED");
-        if (savedInstanceState != null) {
-            restoreState(savedInstanceState);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        Log.i(this.toString(), "ON SAVE INSTANCE");
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(ALL_TIME_CHECKED, mAllTimeChecked);
-        outState.putLong(START_DATE, mStartDate);
-        outState.putLong(END_DATE, mEndDate);
-
-        outState.putBoolean(ALL_TYPES_CHECKED, mAllTypesChecked);
-        outState.putInt(TRANSFER_TYPE, mTypeToShow);
-        outState.putInt(TRANSFER_CATEGORY, mCatToShow);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.i(this.toString(), "ON ATTACH");
-
-        if (context instanceof MainActivity){
-            mMainActivity = (MainActivity) context;
-        }
     }
 
     @Override
@@ -133,26 +101,7 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
         Log.i(this.toString(), "ON RESUME");
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.i(this.toString(), "ON PAUSE");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.i(this.toString(), "ON STOP");
-    }
-
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.i(this.toString(), "ON DETACH");
-    }
-
-    private void restoreState(Bundle savedInstanceState) {
+    protected void restoreState(Bundle savedInstanceState) {
         Log.i(this.toString(), "Saved instance is not null!!!!!!!!!!!!!!!");
 
         mAllTimeChecked = savedInstanceState.getBoolean(ALL_TIME_CHECKED);
@@ -162,14 +111,6 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
         mAllTypesChecked = savedInstanceState.getBoolean(ALL_TYPES_CHECKED);
         mTypeToShow = savedInstanceState.getInt(TRANSFER_TYPE, mTypeToShow);
         mCatToShow = savedInstanceState.getInt(TRANSFER_CATEGORY);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            restoreState(savedInstanceState);
-        }
     }
 
     @Override
@@ -186,12 +127,18 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
         return view;
     }
 
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.appbar_button_refresh_charts).setVisible(false);
+        menu.findItem(R.id.appbar_button_refresh_transfers).setVisible(true);
+        super.onPrepareOptionsMenu(menu);
+    }
+
     // Called from MainActivity after the controller has been set bc otherwise everything crashes with NPE!!
     public void initialiseUI(View view) {
 
         mListViewCursor = reloadDatabase();
 
-        loadSpinnerCursors();
         initialiseSpinners(view);
 
         mTransfersListView = view.findViewById(R.id.transfers_list_view);
@@ -237,6 +184,9 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void initialiseSpinners(View view) {
+
+        loadSpinnerCursors();
+
         mTransferTypesSpinner = view.findViewById(R.id.transfers_spinner_transfer_type);
         mTransferCatSpinner = view.findViewById(R.id.transfers_spinner_transfer_category);
 
@@ -314,6 +264,18 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
         }
     }
 
+    private void requestRefreshList() {
+        Log.i(this.toString(), "requestRefreshList() reached");
+
+        Cursor oldCursor = mListViewCursor;
+        mListViewCursor = reloadDatabase();
+        initialiseListView(mListViewCursor);
+
+        if (oldCursor != null) {
+            oldCursor.close();
+        }
+    }
+
     private Cursor reloadDatabase() {
         Log.i(this.toString(), "mTypeToShow = " + mTypeToShow + "\n");
         Cursor cursor = null;
@@ -333,17 +295,11 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
             Log.i(this.toString(), "SHOW SPECIFIC DATES");
             // check if the dates are ok
             if (mStartDate == 0 || mEndDate == 0) {
-//                View view = this.getView();
-//                if (view != null ) { // means we are dealing with preselection and this fragment is not ready yet
                     Snackbar snackbar = Snackbar.make(this.getView(), "One of the dates is missing!", Snackbar.LENGTH_SHORT);
                     snackbar.show();
-//                }
             } else if (mEndDate < mStartDate) {
-//                View view = this.getView();
-//                if (view != null ) {
                     Snackbar snackbar = Snackbar.make(this.getView(), "End date can't be before start date!", Snackbar.LENGTH_SHORT);
                     snackbar.show();
-//                }
             } else  {
                 // dates are chosen
                 if (mAllTypesChecked) {
@@ -362,15 +318,58 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
         return cursor;
     }
 
-    private void requestRefreshList() {
-        Log.i(this.toString(), "requestRefreshList() reached");
+    @Override
+    public void onClick(View view) {
+        if (view == mButtonNewTransfer) {
+            mMainActivity.showAddNewTransferPopup();
+        } else if (view == mStartDateButton) {
+            Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+            DatePickerDialog picker = new DatePickerDialog(getContext(), new StartDatePickerListener(),
+                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH));
+            picker.show();
+        } else if (view == mEndDateButton) {
+            Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+            DatePickerDialog picker = new DatePickerDialog(getContext(), new EndDatePickerListener(),
+                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH));
+            picker.show();
+        }
+    }
 
-        Cursor oldCursor = mListViewCursor;
-        mListViewCursor = reloadDatabase();
-        initialiseListView(mListViewCursor);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.appbar_button_refresh_transfers:
+                requestRefreshList();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
-        if (oldCursor != null) {
-            oldCursor.close();
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+        if (compoundButton == mCheckBoxAllTypes) {
+            if (checked) {
+                mAllTypesChecked = true;
+                mTransferTypesSpinner.setEnabled(false);
+                mTransferCatSpinner.setEnabled(false);
+            } else if (!checked) {
+                mAllTypesChecked = false;
+                mTransferTypesSpinner.setEnabled(true);
+                mTransferCatSpinner.setEnabled(true);
+            }
+        } else if (compoundButton == mCheckBoxAllTime) {
+            if (checked) {
+                mAllTimeChecked = true;
+                mStartDateButton.setEnabled(false);
+                mEndDateButton.setEnabled(false);
+            } else if (!checked) {
+                mAllTimeChecked = false;
+                mStartDateButton.setEnabled(true);
+                mEndDateButton.setEnabled(true);
+            }
         }
     }
 
@@ -516,69 +515,6 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
         }
     }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.appbar_button_refresh_charts).setVisible(false);
-        menu.findItem(R.id.appbar_button_refresh_transfers).setVisible(true);
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public void onClick(View view) {
-        if (view == mButtonNewTransfer) {
-            mMainActivity.showAddNewTransferPopup();
-        } else if (view == mStartDateButton) {
-            Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-            DatePickerDialog picker = new DatePickerDialog(getContext(), new StartDatePickerListener(),
-                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH));
-            picker.show();
-        } else if (view == mEndDateButton) {
-            Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-            DatePickerDialog picker = new DatePickerDialog(getContext(), new EndDatePickerListener(),
-                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH));
-            picker.show();
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.appbar_button_refresh_transfers:
-//                Log.i(this.toString(), "onOptionsItemSelected(MenuItem item) reached");
-                requestRefreshList();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-        if (compoundButton == mCheckBoxAllTypes) {
-            if (checked) {
-                mAllTypesChecked = true;
-                mTransferTypesSpinner.setEnabled(false);
-                mTransferCatSpinner.setEnabled(false);
-            } else if (!checked) {
-                mAllTypesChecked = false;
-                mTransferTypesSpinner.setEnabled(true);
-                mTransferCatSpinner.setEnabled(true);
-            }
-        } else if (compoundButton == mCheckBoxAllTime) {
-            if (checked) {
-                mAllTimeChecked = true;
-                mStartDateButton.setEnabled(false);
-                mEndDateButton.setEnabled(false);
-            } else if (!checked) {
-                mAllTimeChecked = false;
-                mStartDateButton.setEnabled(true);
-                mEndDateButton.setEnabled(true);
-            }
-        }
-    }
-
     private class StartDatePickerListener implements DatePickerDialog.OnDateSetListener {
 
         @Override
@@ -628,7 +564,6 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
             switch(CURSOR_TYPE) {
                 case ALL:
                     String source = "'" + mListViewCursor.getString(mListViewCursor.getColumnIndexOrThrow(TransfersRepository.UNION_COLUMN_SOURCE)) +"'";
-//                    _id = mListViewCursor.getInt(mListViewCursor.getColumnIndexOrThrow(TransfersRepository.UNION_COLUMN_ID));
                     if (source.equals(TransfersRepository.EXP_SOURCE)) {
                         mMainActivity.showTransferDetail((int) id, EXPENDITURES);
                     } else if (source.equals(TransfersRepository.INCOME_SOURCE)){
@@ -636,15 +571,44 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
                     }
                     break;
                 case EXPENDITURES:
-//                    _id = mListViewCursor.getLong(mListViewCursor.getColumnIndexOrThrow(TransfersRepository.UNION_COLUMN_ID));
                     mMainActivity.showTransferDetail((int) id, EXPENDITURES);
                     break;
                 case INCOME:
-//                    _id = mListViewCursor.getInt(mListViewCursor.getColumnIndexOrThrow(TransfersRepository.UNION_COLUMN_ID));
                     mMainActivity.showTransferDetail((int) id, INCOME);
-//                    Log.i(this.toString(), "ID: " + id);
                     break;
             }
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(this.toString(), "ON PAUSE");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i(this.toString(), "ON STOP");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mListViewCursor.close();
+        mIncomeCatsCursor.close();
+        mExpenditureCatsCursor.close();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.i(this.toString(), "ON SAVE INSTANCE");
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ALL_TIME_CHECKED, mAllTimeChecked);
+        outState.putLong(START_DATE, mStartDate);
+        outState.putLong(END_DATE, mEndDate);
+        outState.putBoolean(ALL_TYPES_CHECKED, mAllTypesChecked);
+        outState.putInt(TRANSFER_TYPE, mTypeToShow);
+        outState.putInt(TRANSFER_CATEGORY, mCatToShow);
     }
 }

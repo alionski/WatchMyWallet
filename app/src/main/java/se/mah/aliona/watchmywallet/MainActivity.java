@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,18 +47,19 @@ import layout.TransferDetailFragment;
 import layout.TransfersFragment;
 import se.mah.aliona.watchmywallet.beans.Expenditure;
 import se.mah.aliona.watchmywallet.beans.Income;
+import se.mah.aliona.watchmywallet.beans.WalletBarcode;
 import se.mah.aliona.watchmywallet.database.DatabaseController;
 import se.mah.aliona.watchmywallet.database.Contract;
 import se.mah.aliona.watchmywallet.database.TransfersRepository;
 
-public class MainActivity extends BaseActivity implements AddNewTransferPopup.Callback {
+public class MainActivity extends AppCompatActivity implements AddNewTransferPopup.Callback {
     private String mUserName;
     private String mUserSurname;
 
     private static final int SCANNER_INTENT = 0;
 
     public static String SAVED_FRAGMENT;
-    public static int CURRENT_FRAGMENT = 0; // always transfers when activity is started without saved state
+    public static int CURRENT_FRAGMENT = 0; // always transfers on fresh start
 
     public static final int TRANSFERS = 0;
     public static final int STATISTICS = 1;
@@ -73,8 +75,6 @@ public class MainActivity extends BaseActivity implements AddNewTransferPopup.Ca
     public static final String NEW_INC_ID = "new_inc";
     public static final String TRANS_DETAIL_ID = "trans_detail";
 
-//    private BaseFragment[] fragments = new BaseFragment[5];
-
     public static final String[] mOptionsList = {"Transfers", "Statistics", "Settings"};
 
     private DatabaseController mDBController;
@@ -84,7 +84,6 @@ public class MainActivity extends BaseActivity implements AddNewTransferPopup.Ca
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private RelativeLayout mDrawerRelativeLayout;
-    private BaseActivity mBase;
     private int mClickedItem = 0;
 
     @Override
@@ -93,9 +92,7 @@ public class MainActivity extends BaseActivity implements AddNewTransferPopup.Ca
         setContentView(R.layout.activity_main_drawer_layout);
 
         if (savedInstanceState != null) {
-
             CURRENT_FRAGMENT = savedInstanceState.getInt(SAVED_FRAGMENT);
-//            fragments[CURRENT_FRAGMENT] = (BaseFragment) getSupportFragmentManager().getFragment(savedInstanceState, SAVED_FRAGMENT);
         }
 
         mDBController = new DatabaseController(this.getApplicationContext());
@@ -353,8 +350,30 @@ public class MainActivity extends BaseActivity implements AddNewTransferPopup.Ca
     }
 
     // CALLS TO DB
+
     public void saveExpenditureToDB(Expenditure exp) {
         mDBController.saveNewExpenditure(exp);
+        setNewFragment(TRANSFERS, null, null);
+    }
+
+    public void saveExpenditureToDB(Expenditure exp, long newBarcodeNumber) {
+        WalletBarcode barcode =
+                new WalletBarcode();
+        barcode.setBarcodeNumber(newBarcodeNumber);
+        barcode.setProductName(exp.getExpTitle());
+        barcode.setInitialPrice(exp.getExpCost());
+
+        int expId = (int) mDBController.saveNewExpenditure(exp);
+        int newBarcodeId = (int) mDBController.saveBarcode(barcode);
+
+        mDBController.saveExpBarcode(newBarcodeId, expId);
+
+        setNewFragment(TRANSFERS, null, null);
+    }
+
+    public void saveExpenditureToDB(Expenditure exp, int foundBarcodeId) {
+        int expId = (int) mDBController.saveNewExpenditure(exp);
+        mDBController.saveExpBarcode(foundBarcodeId, expId);
         setNewFragment(TRANSFERS, null, null);
     }
 
@@ -556,23 +575,25 @@ public class MainActivity extends BaseActivity implements AddNewTransferPopup.Ca
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
         if (requestCode == SCANNER_INTENT) {
-            // Make sure the request was successful
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
 
-
                     AddExpenditureFragment exp =
                             (AddExpenditureFragment) getSupportFragmentManager().findFragmentByTag(NEW_EXP_ID);
-                    exp.setBarcodeResult(barcode.displayValue);
 
-                    Log.i(this.toString(), "ON ACTIVITY RESULT  " + barcode.displayValue);
+                    WalletBarcode dbBarcode =
+                            mDBController.getBarcode(Long.parseLong(barcode.displayValue));
+                    if (dbBarcode != null) {
+                        exp.setFoundBarcode(dbBarcode);
+                    } else {
+                        exp.setBarcodeResult(barcode.displayValue);
+                    }
+
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.fragment_main_holder),
                             R.string.barcode_success, Snackbar.LENGTH_SHORT);
                     snackbar.show();
-                    Log.d(this.toString(), "Barcode read: " + barcode.displayValue);
                 } else {
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.fragment_main_holder),
                             String.format(getString(R.string.barcode_error),
@@ -637,5 +658,15 @@ public class MainActivity extends BaseActivity implements AddNewTransferPopup.Ca
         mDrawerList.setItemChecked(pos, true);
         setTitle(title);
         mDrawer.closeDrawer(mDrawerRelativeLayout);
+    }
+
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mDBController.closeDatabase();
     }
 }

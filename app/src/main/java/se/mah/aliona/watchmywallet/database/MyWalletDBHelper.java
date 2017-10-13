@@ -14,7 +14,7 @@ import se.mah.aliona.watchmywallet.R;
 
 public class MyWalletDBHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "WatchMyWallet.db";
     private Context ctx;
 
@@ -24,14 +24,18 @@ public class MyWalletDBHelper extends SQLiteOpenHelper {
                     Contract.Exp.COLUMN_NAME_TITLE + " TEXT," +
                     Contract.Exp.COLUMN_NAME_COST  + " REAL," +
                     Contract.Exp.COLUMN_NAME_DATE + " INTEGER," +
-                    Contract.Exp.COLUMN_NAME_CATEGORY + " INTEGER)";
+                    Contract.Exp.COLUMN_NAME_CATEGORY + " INTEGER, " +
+                    "FOREIGN KEY(" + Contract.Exp.COLUMN_NAME_CATEGORY + ") REFERENCES " +
+                    Contract.ExpCats.TABLE_NAME + "(" + Contract.ExpCats._ID + "))";
     private static final String SQL_CREATE_INCOME_TABLE =
             "CREATE TABLE " + Contract.Inc.TABLE_NAME + " (" +
                     Contract.Inc._ID + " INTEGER PRIMARY KEY," +
                     Contract.Inc.COLUMN_NAME_TITLE + " TEXT," +
                     Contract.Inc.COLUMN_NAME_AMOUNT  + " REAL," +
                     Contract.Inc.COLUMN_NAME_DATE + " INTEGER," +
-                    Contract.Inc.COLUMN_NAME_CATEGORY + " INTEGER)";
+                    Contract.Inc.COLUMN_NAME_CATEGORY + " INTEGER, " +
+                    "FOREIGN KEY(" + Contract.Inc.COLUMN_NAME_CATEGORY  + ") REFERENCES " +
+                    Contract.IncCats.TABLE_NAME + "(" + Contract.IncCats._ID + "))";
     private static final String SQL_CREATE_EXP_CAT_TABLE =
             "CREATE TABLE " + Contract.ExpCats.TABLE_NAME + " (" +
                     Contract.ExpCats._ID + " INTEGER PRIMARY KEY," +
@@ -40,6 +44,23 @@ public class MyWalletDBHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + Contract.IncCats.TABLE_NAME + " (" +
                     Contract.IncCats._ID + " INTEGER PRIMARY KEY," +
                     Contract.IncCats.COLUMN_INC_CAT_NAME + " TEXT)";
+    private static final String SQL_CREATE_BARCODES_TABLE =
+            "CREATE TABLE " + Contract.Barcodes.TABLE_NAME + " (" +
+                    Contract.Barcodes._ID + " INTEGER PRIMARY KEY, " +
+                    Contract.Barcodes.COLUMN_NAME_BARCODE + " INTEGER, " +
+                    Contract.Barcodes.COLUMN_NAME_PRODUCT_NAME + " TEXT, " +
+                    Contract.Barcodes.COLUMN_NAME_INITIAL_PRICE + " REAL)";
+    private static final String SQL_CREATE_EXP_BARCODES_TABLE =
+            "CREATE TABLE " + Contract.ExpBarcode.TABLE_NAME + " (" +
+                    Contract.ExpBarcode._ID + " INTEGER PRIMARY KEY, " +
+                    Contract.ExpBarcode.COLUMN_NAME_BARCODE_ID + " INTEGER, " +
+                    Contract.ExpBarcode.COLUMN_NAME_EXPENDITURE_ID + " INTEGER, " +
+                    "FOREIGN KEY(" + Contract.ExpBarcode.COLUMN_NAME_BARCODE_ID + ") REFERENCES " +
+                    Contract.Barcodes.TABLE_NAME + "(" + Contract.Barcodes._ID + "), " +
+                    "FOREIGN KEY(" + Contract.ExpBarcode.COLUMN_NAME_EXPENDITURE_ID + ") REFERENCES " +
+                    Contract.Exp.TABLE_NAME + "(" + Contract.Exp._ID + "))";
+
+
 
     private static final String SQL_DELETE_EXP_TABLE =
             "DROP TABLE IF EXISTS " + Contract.Exp.TABLE_NAME;
@@ -49,6 +70,10 @@ public class MyWalletDBHelper extends SQLiteOpenHelper {
             "DROP TABLE IF EXISTS " + Contract.ExpCats.TABLE_NAME;
     private static final String SQL_DELETE_INC_CAT_TABLE =
             "DROP TABLE IF EXISTS " + Contract.IncCats.TABLE_NAME;
+    private static final String SQL_DELETE_BARCODES_TABLE =
+            "DROP TABLE IF EXISTS " + Contract.Barcodes.TABLE_NAME;
+    private static final String SQL_DELETE_EXP_BARCODES_TABLE =
+            "DROP TABLE IF EXISTS " + Contract.ExpBarcode.TABLE_NAME;
 
     public MyWalletDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -61,6 +86,8 @@ public class MyWalletDBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SQL_CREATE_INCOME_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_EXP_CAT_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_INC_CAT_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_BARCODES_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_EXP_BARCODES_TABLE);
         populateCategories(sqLiteDatabase);
     }
 
@@ -74,6 +101,8 @@ public class MyWalletDBHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_DELETE_INC_TABLE);
         db.execSQL(SQL_DELETE_EXP_CAT_TABLE);
         db.execSQL(SQL_DELETE_INC_CAT_TABLE);
+        db.execSQL(SQL_DELETE_BARCODES_TABLE);
+        db.execSQL(SQL_DELETE_EXP_BARCODES_TABLE);
         onCreate(db);
     }
 

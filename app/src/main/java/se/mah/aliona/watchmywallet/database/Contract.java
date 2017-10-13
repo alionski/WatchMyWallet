@@ -40,4 +40,19 @@ public class Contract {
         public static final String _ID = "_id";
         public static final String COLUMN_INC_CAT_NAME = "name";
     }
+
+    public static class Barcodes implements BaseColumns {
+        public static final String TABLE_NAME = "barcodes";
+        public static final String _ID = "_id";
+        public static final String COLUMN_NAME_BARCODE = "barcode_value"; // long
+        public static final String COLUMN_NAME_PRODUCT_NAME = "product_name";
+        public static final String COLUMN_NAME_INITIAL_PRICE = "initial_price";
+    }
+
+    public static class ExpBarcode implements BaseColumns {
+        public static final String TABLE_NAME = "expenditure_barcodes";
+        public static final String _ID = "_id";
+        public static final String COLUMN_NAME_BARCODE_ID = "barcode_id"; // long
+        public static final String COLUMN_NAME_EXPENDITURE_ID = "expenditure_id";
+    }
 }

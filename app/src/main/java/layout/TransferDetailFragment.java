@@ -24,14 +24,8 @@ import se.mah.aliona.watchmywallet.beans.Income;
 public class TransferDetailFragment extends BaseFragment {
     public static final int EXPENDITURES = 1;
     public static final int INCOME = 2;
-
     private static final String TYPE = "detail_type";
     private static final String TRANSFER_OBJECT = "transfer_object";
-    private static final String ID = "_id";
-    private static final String TITLE = "title";
-    private static final String AMOUNT = "amount";
-    private static final String DATE = "date";
-    private static final String CATEGORY = "category";
 
     private Expenditure mExp;
     private Income mInc;
@@ -73,25 +67,7 @@ public class TransferDetailFragment extends BaseFragment {
         return instance;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.i(this.toString(), "ON ACTIVITY CREATED");
-//        if (savedInstanceState != null) {
-//            restoreState(savedInstanceState);
-//        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.i(this.toString(), "ON ATTACH");
-        if (context instanceof MainActivity){
-            mMainActivity = (MainActivity) context;
-        }
-    }
-
-    private void restoreState(Bundle savedInstanceState) {
+    protected void restoreState(Bundle savedInstanceState) {
         Log.i(this.toString(), "Saved instance is not null!!!!!!!!!!!!!!!");
         mType = savedInstanceState.getInt(TYPE, 0);
         Serializable transfer = savedInstanceState.getSerializable(TRANSFER_OBJECT);
@@ -170,18 +146,6 @@ public class TransferDetailFragment extends BaseFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Log.i(this.toString(), "ON START");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(this.toString(), "ON RESUME");
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         Log.i(this.toString(), "ON PAUSE");
@@ -192,12 +156,4 @@ public class TransferDetailFragment extends BaseFragment {
         super.onStop();
         Log.i(this.toString(), "ON STOP");
     }
-
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.i(this.toString(), "ON DETACH");
-    }
-
 }

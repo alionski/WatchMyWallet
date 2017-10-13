@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import se.mah.aliona.watchmywallet.beans.WalletBarcode;
 import se.mah.aliona.watchmywallet.beans.Expenditure;
 import se.mah.aliona.watchmywallet.beans.Income;
 
@@ -20,7 +21,6 @@ public class DatabaseController {
     private IncomeRepository mIncomeRepo;
     private ExpenditureRepository mExpRepo;
     private TransfersRepository mTransfersRepo;
-    private int mOpenCounter;
 
     public DatabaseController(Context context) {
         mDbHelper = new MyWalletDBHelper(context);
@@ -29,28 +29,15 @@ public class DatabaseController {
         mIncomeRepo = new IncomeRepository(this);
         mExpRepo = new ExpenditureRepository(this);
         mTransfersRepo = new TransfersRepository(this);
-        openDatabase(); // keep the db open while the app is being used and db controller is alive?
+        mDatabase = mDbHelper.getWritableDatabase();
     }
 
-    public SQLiteOpenHelper getDatabaseHelper() {
-        return mDbHelper;
-    }
-
-    public synchronized SQLiteDatabase openDatabase() {
-        mOpenCounter++;
-        if(mOpenCounter == 1) {
-            // Opening new database
-            mDatabase = mDbHelper.getWritableDatabase();
-        }
+    public  SQLiteDatabase openDatabase() {
         return mDatabase;
     }
 
-    public synchronized void closeDatabase() {
-        mOpenCounter--;
-        if(mOpenCounter == 0) {
-            // Closing database
-            mDatabase.close();
-        }
+    public void closeDatabase() {
+        mDatabase.close();
     }
 
     public Cursor getIncomeCategories() {
@@ -61,8 +48,8 @@ public class DatabaseController {
         return mExpenditureCats.getAllCategories();
     }
 
-    public void saveNewExpenditure(Expenditure exp) {
-        mExpRepo.saveExpenditure(exp);
+    public long saveNewExpenditure(Expenditure exp) {
+        return mExpRepo.saveExpenditure(exp);
     }
 
     public void saveNewIncome(Income income) {
@@ -140,5 +127,17 @@ public class DatabaseController {
 
     public Income getIncome(int id) {
         return mIncomeRepo.getIncome(id);
+    }
+
+    public WalletBarcode getBarcode(long barcodeNumber) {
+        return mExpRepo.getBarcode(barcodeNumber);
+    }
+
+    public long saveBarcode(WalletBarcode barcode) {
+        return mExpRepo.saveBarcode(barcode);
+    }
+
+    public void saveExpBarcode(int barcodeId, int expId) {
+        mExpRepo.saveExpBarcode(barcodeId, expId);
     }
 }

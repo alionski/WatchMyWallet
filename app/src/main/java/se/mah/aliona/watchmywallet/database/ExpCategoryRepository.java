@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class ExpCategoryRepository {
     private DatabaseController ctrl;
-    private SQLiteDatabase db;
     private String[] allColumns =
                     {Contract.ExpCats._ID,
                     Contract.ExpCats.COLUMN_EXP_CAT_NAME};
@@ -29,7 +28,6 @@ public class ExpCategoryRepository {
                 null,
                 null,
                 sortOrder);
-//        ctrl.closeDatabase();
         return cursor;
     }
 }

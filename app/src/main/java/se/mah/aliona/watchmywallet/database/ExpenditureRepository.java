@@ -3,12 +3,9 @@ package se.mah.aliona.watchmywallet.database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Bundle;
-import android.util.Log;
 
+import se.mah.aliona.watchmywallet.beans.WalletBarcode;
 import se.mah.aliona.watchmywallet.beans.Expenditure;
 
 /**
@@ -16,48 +13,38 @@ import se.mah.aliona.watchmywallet.beans.Expenditure;
  */
 
 public class ExpenditureRepository {
-    private Bundle bundle;
     public static final int CURSOR_ID = 1;
-    public static final String CURSOR_FROM = "CURSOR_FROM";
     private DatabaseController ctrl;
-    private SQLiteDatabase db;
-    private SQLiteOpenHelper dbHelper;
-    private String[] allColumns =
-            {Contract.Exp._ID,
-                    Contract.Exp.COLUMN_NAME_TITLE,
-                    Contract.Exp.COLUMN_NAME_COST,
-                    Contract.Exp.COLUMN_NAME_DATE,
-                    Contract.Exp.COLUMN_NAME_CATEGORY};
 
     public ExpenditureRepository(DatabaseController ctrl) {
         this.ctrl = ctrl;
-        dbHelper = ctrl.getDatabaseHelper();
-        bundle = new Bundle();
-        bundle.putInt(CURSOR_FROM, CURSOR_ID);
     }
 
-
-    public void open() throws SQLException {
-        db = dbHelper.getWritableDatabase();
-    }
-
-    public void close() {
-        dbHelper.close();
-    }
-
-    // db operations methods follow here
-
-    public void saveExpenditure(Expenditure exp) {
-        // Gets the data repository in write mode
+    public long saveExpenditure(Expenditure exp) {
         SQLiteDatabase db = ctrl.openDatabase();
-
         ContentValues values = new ContentValues();
         values.put(Contract.Exp.COLUMN_NAME_TITLE, exp.getExpTitle());
         values.put(Contract.Exp.COLUMN_NAME_COST, exp.getExpCost());
         values.put(Contract.Exp.COLUMN_NAME_DATE, exp.getExpDate());
         values.put(Contract.Exp.COLUMN_NAME_CATEGORY, exp.getExpCatId());
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(Contract.Exp.TABLE_NAME, null, values);
+        return db.insert(Contract.Exp.TABLE_NAME, null, values);
+    }
+
+    public long saveBarcode(WalletBarcode barcode) {
+        SQLiteDatabase db = ctrl.openDatabase();
+        ContentValues values = new ContentValues();
+        values.put(Contract.Barcodes.COLUMN_NAME_BARCODE, barcode.getBarcodeNumber());
+        values.put(Contract.Barcodes.COLUMN_NAME_PRODUCT_NAME, barcode.getProductName());
+        values.put(Contract.Barcodes.COLUMN_NAME_INITIAL_PRICE, barcode.getInitialPrice());
+        return db.insert(Contract.Barcodes.TABLE_NAME, null, values);
+    }
+
+    public void saveExpBarcode(int barcodeId, int expId) {
+        SQLiteDatabase db = ctrl.openDatabase();
+        ContentValues values = new ContentValues();
+        values.put(Contract.ExpBarcode.COLUMN_NAME_BARCODE_ID, barcodeId);
+        values.put(Contract.ExpBarcode.COLUMN_NAME_EXPENDITURE_ID, expId);
+        db.insert(Contract.ExpBarcode.TABLE_NAME, null, values);
     }
 
     public Cursor getExpenditureList() {
@@ -80,8 +67,8 @@ public class ExpenditureRepository {
     }
 
     public Cursor getExpenditureList(int cat) {
-        String[] params = new String[]{ String.valueOf(cat) };
         SQLiteDatabase db = ctrl.openDatabase();
+        String[] params = new String[]{ String.valueOf(cat) };
         String query = "SELECT exp." + Contract.Exp._ID +  ", " +
                     "exp." + Contract.Exp.COLUMN_NAME_TITLE + ", " +
                     "exp." + Contract.Exp.COLUMN_NAME_COST + ", " +
@@ -96,13 +83,13 @@ public class ExpenditureRepository {
                 " ORDER BY " + Contract.Exp.COLUMN_NAME_DATE + " DESC";
 
         Cursor cursor = db.rawQuery(query, params);
-        DatabaseUtils.dumpCursor(cursor);
+//        DatabaseUtils.dumpCursor(cursor);
         return cursor;
     }
 
     public Cursor getExpenditureList(int cat, long start, long end) {
-        String[] params = new String[]{ String.valueOf(cat), String.valueOf(start), String.valueOf(end) };
         SQLiteDatabase db = ctrl.openDatabase();
+        String[] params = new String[]{ String.valueOf(cat), String.valueOf(start), String.valueOf(end) };
         String query = "SELECT exp." + Contract.Exp._ID +  ", " +
                         "exp." + Contract.Exp.COLUMN_NAME_TITLE + ", " +
                         "exp." + Contract.Exp.COLUMN_NAME_COST + ", " +
@@ -119,7 +106,7 @@ public class ExpenditureRepository {
                 " ORDER BY " + Contract.Exp.COLUMN_NAME_DATE + " DESC";
 
         Cursor cursor = db.rawQuery(query, params);
-        DatabaseUtils.dumpCursor(cursor);
+//        DatabaseUtils.dumpCursor(cursor);
         return cursor;
     }
 
@@ -142,11 +129,11 @@ public class ExpenditureRepository {
                 " ORDER BY " + Contract.Exp.COLUMN_NAME_DATE + " DESC";
 
         Cursor cursor = db.rawQuery(query, params);
-        cursor.respond(bundle);
         return cursor;
     }
 
     public Expenditure getExpenditure(int id) {
+        SQLiteDatabase db = ctrl.openDatabase();
         Expenditure exp = new Expenditure();
         String[] params = new String[]{String.valueOf(id) };
         String query = "SELECT exp." + Contract.Exp._ID +  ", " +
@@ -162,7 +149,6 @@ public class ExpenditureRepository {
                         " WHERE exp." +
                         Contract.Exp._ID + " = ?";
 
-        SQLiteDatabase db = ctrl.openDatabase();
         Cursor cursor = db.rawQuery(query, params);
 
         cursor.moveToFirst();
@@ -175,6 +161,27 @@ public class ExpenditureRepository {
         DatabaseUtils.dumpCursor(cursor);
         cursor.close();
         return exp;
+    }
+
+    public WalletBarcode getBarcode(long barcodeNumber) {
+        SQLiteDatabase db = ctrl.openDatabase();
+        WalletBarcode barcode = new WalletBarcode();
+        String[] params = new String[]{String.valueOf(barcodeNumber) };
+        String query =
+                "SELECT * FROM " + Contract.Barcodes.TABLE_NAME +
+                        " WHERE " + Contract.Barcodes.COLUMN_NAME_BARCODE + " =?";
+        Cursor cursor = db.rawQuery(query, params);
+        if (cursor.getCount() == 0) {
+            return null;
+        } else {
+            cursor.moveToFirst();
+            barcode.setBarcodeID(cursor.getInt(cursor.getColumnIndexOrThrow(Contract.Barcodes._ID)));
+            barcode.setBarcodeNumber(cursor.getLong(cursor.getColumnIndexOrThrow(Contract.Barcodes.COLUMN_NAME_BARCODE)));
+            barcode.setProductName(cursor.getString(cursor.getColumnIndexOrThrow(Contract.Barcodes.COLUMN_NAME_PRODUCT_NAME)));
+            barcode.setInitialPrice(cursor.getDouble(cursor.getColumnIndexOrThrow(Contract.Barcodes.COLUMN_NAME_INITIAL_PRICE)));
+            cursor.close();
+            return barcode;
+        }
     }
 }
 

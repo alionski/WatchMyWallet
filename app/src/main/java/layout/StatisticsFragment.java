@@ -2,7 +2,6 @@ package layout;
 
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -48,7 +47,11 @@ import se.mah.aliona.watchmywallet.R;
  * A simple {@link Fragment} subclass.
  */
 public class StatisticsFragment extends BaseFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
-    protected HorizontalBarChart mHorizontalChart;
+    private static final String ALL_TIME_CHECKED = "all_time_checked";
+    private static final String START_DATE = "start_date";
+    private static final String END_DATE = "end_date";
+
+    private HorizontalBarChart mHorizontalChart;
     private TextView mTopMessage;
     private TextView mBalanceMessage;
     private PieChart mExpendituresPieChart;
@@ -61,6 +64,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
     private ArrayList<PieEntry> mIncomeEntries;
     private ArrayList<BarEntry> mHorizontalChartEntries;
 
+    private boolean mAllTimeChecked = true;
     private long mStartDate;
     private long mEndDate;
 
@@ -73,30 +77,32 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof MainActivity){
-            mMainActivity = (MainActivity) context;
-        }
+    public void onStart() {
+        super.onStart();
+        Log.i(this.toString(), "ON START");
     }
 
-    public static StatisticsFragment newInstance(String username, String usersurname) {
-        StatisticsFragment f = new StatisticsFragment();
-
-        // Supply index input as an argument.
-        Bundle args = new Bundle();
-        args.putString("name", username);
-        args.putString("surname", usersurname);
-        f.setArguments(args);
-
-        return f;
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(this.toString(), "ON RESUME");
     }
 
+    @Override
+    protected void restoreState(Bundle savedInstanceState) {
+        Log.i(this.toString(), "Saved instance is not null!!!!!!!!!!!!!!!");
+        mAllTimeChecked = savedInstanceState.getBoolean(ALL_TIME_CHECKED);
+        mStartDate = savedInstanceState.getLong(START_DATE);
+        mEndDate = savedInstanceState.getLong(END_DATE);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(this.toString(), "ON CREATE VIEW");
+        if (savedInstanceState != null) {
+            restoreState(savedInstanceState);
+        }
         cleanContainer(container);
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.fragment_statistics, container, false);
@@ -105,32 +111,58 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         return view;
     }
 
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.appbar_button_refresh_transfers).setVisible(false);
+        menu.findItem(R.id.appbar_button_refresh_charts).setVisible(true);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.appbar_button_refresh_charts:
+                requestRefreshCharts();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void initialiseUI(View view) {
-        mExpendituresEntries = mMainActivity.getDataForExpPieChart(0,0);
-        mIncomeEntries = mMainActivity.getDataForIncPieChart(0,0);
-        mHorizontalChartEntries = mMainActivity.getDataForHorizontalChart(0,0);
+        mExpendituresEntries = mMainActivity.getDataForExpPieChart(mStartDate,mEndDate);
+        mIncomeEntries = mMainActivity.getDataForIncPieChart(mStartDate,mEndDate);
+        mHorizontalChartEntries = mMainActivity.getDataForHorizontalChart(mStartDate,mEndDate);
 
         mTopMessage = view.findViewById(R.id.stats_message_top);
         mTopMessage.setText(
-                "Here is how your economy looks, " + mName + ". Choose to see for all times or specific dates."
+                "Here is how your economy looks, " + mName + ". Choose to see for all time or specific dates."
         );
         mBalanceMessage = view.findViewById(R.id.stats_balance_message);
 
         mStartDateButton = view.findViewById(R.id.stats_button_start_date);
         mStartDateButton.setOnClickListener(this);
-        mStartDateButton.setEnabled(false);
+        mStartDateButton.setEnabled(!mAllTimeChecked);
 
         mEndDateButton = view.findViewById(R.id.stats_button_end_date);
         mEndDateButton.setOnClickListener(this);
-        mEndDateButton.setEnabled(false);
+        mEndDateButton.setEnabled(!mAllTimeChecked);
 
         mCheckBoxAllTime = view.findViewById(R.id.stats_check_box_select_all_time);
         mCheckBoxAllTime.setOnCheckedChangeListener(this);
-        mCheckBoxAllTime.setChecked(true);
+        mCheckBoxAllTime.setChecked(mAllTimeChecked);
 
+        if (mStartDate != 0) {
+            mStartDateButton.setText(MainActivity.prettify(mStartDate));
+        }
+
+        if (mEndDate != 0) {
+            mEndDateButton.setText(MainActivity.prettify(mEndDate));
+        }
+
+        initialiseHorizontalChart(view);
         initialiseExpPieChart(view);
         initialiseIncPieChart(view);
-        initiliseHorizontalChart(view);
     }
 
     private void initialiseIncPieChart(View view) {
@@ -143,7 +175,6 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         mIncomePieChart.setDragDecelerationFrictionCoef(0.95f);
 
         mIncomePieChart.setCenterTextTypeface(mTfLight);
-//        mExpendituresPieChart.setCenterText(generateCenterSpannableText());
 
         mIncomePieChart.setDrawHoleEnabled(true);
         mIncomePieChart.setHoleColor(Color.WHITE);
@@ -161,13 +192,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         mIncomePieChart.setRotationEnabled(true);
         mIncomePieChart.setHighlightPerTapEnabled(true);
 
-        // mHorizontalChart.setUnit(" €");
-        // mHorizontalChart.setDrawUnitsInChart(true);
-
-        // add a selection listener
-//        mExpendituresPieChart.setOnChartValueSelectedListener(this);
-
-        setIncomePieChartData(mIncomeEntries, 100);
+        setIncomePieChartData(mIncomeEntries);
 
         mIncomePieChart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
         // mHorizontalChart.spin(2000, 0, 360);
@@ -215,13 +240,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         mExpendituresPieChart.setRotationEnabled(true);
         mExpendituresPieChart.setHighlightPerTapEnabled(true);
 
-//         mHorizontalChart.setUnit(" €");
-        // mHorizontalChart.setDrawUnitsInChart(true);
-
-        // add a selection listener
-//        mExpendituresPieChart.setOnChartValueSelectedListener(this);
-
-        setExpenditurePieChartData(mExpendituresEntries, 100);
+        setExpenditurePieChartData(mExpendituresEntries);
 
         mExpendituresPieChart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
         // mHorizontalChart.spin(2000, 0, 360);
@@ -246,10 +265,8 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         mExpendituresPieChart.setEntryLabelTextSize(12f);
     }
 
-    private void initiliseHorizontalChart(View view) {
-        mHorizontalChart = (HorizontalBarChart) view.findViewById(R.id.horizontal_chart);
-//        mHorizontalChart.setOnChartValueSelectedListener(this);
-        // mHorizontalChart.setHighlightEnabled(false);
+    private void initialiseHorizontalChart(View view) {
+        mHorizontalChart = view.findViewById(R.id.horizontal_chart);
 
         mHorizontalChart.setDrawBarShadow(false);
         mHorizontalChart.setDrawValueAboveBar(true);
@@ -290,7 +307,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
 
         setHorizontalChartData(mHorizontalChartEntries);
         mHorizontalChart.setFitBars(true);
-//        mHorizontalChart.animateY(2500);
+        mHorizontalChart.animateY(2500);
 
         Legend l = mHorizontalChart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
@@ -301,9 +318,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         l.setXEntrySpace(4f);
     }
 
-    private void setExpenditurePieChartData(ArrayList<PieEntry> dbEntries, float range) {
-
-        float mult = range;
+    private void setExpenditurePieChartData(ArrayList<PieEntry> dbEntries) {
 
         ArrayList<PieEntry> entries = dbEntries;
         for (PieEntry entry : entries) {
@@ -318,7 +333,6 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         dataSet.setIconsOffset(new MPPointF(0, 40));
         dataSet.setSelectionShift(5f);
 
-        // add a lot of colors
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
 
@@ -364,8 +378,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         mExpendituresPieChart.invalidate();
     }
 
-    private void setIncomePieChartData(ArrayList<PieEntry> dbEntries, float range) {
-        float mult = range;
+    private void setIncomePieChartData(ArrayList<PieEntry> dbEntries) {
 
         ArrayList<PieEntry> entries = dbEntries;
 
@@ -422,7 +435,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
             }
         }
 
-        setBalanceMessafe(expenditureTotal, incomeTotal);
+        setBalanceMessage(expenditureTotal, incomeTotal);
 
         set1 = new BarDataSet(exp, "Expenses");
         ArrayList<Integer> colours = new ArrayList<>();
@@ -445,7 +458,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         mHorizontalChart.invalidate();
     }
 
-    private void setBalanceMessafe(float exp, float inc) {
+    private void setBalanceMessage(float exp, float inc) {
         String msg;
         if (exp > inc) {
             msg = "Oooops! Looks like you went under budget in this period.";
@@ -455,24 +468,6 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
             msg = "It's hard to believe, but you have spent exactly the same amount of money that you've earned in this period.";
         }
         mBalanceMessage.setText(msg);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.appbar_button_refresh_transfers).setVisible(false);
-        menu.findItem(R.id.appbar_button_refresh_charts).setVisible(true);
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.appbar_button_refresh_charts:
-                requestRefreshCharts();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     private void requestRefreshCharts() {
@@ -493,8 +488,8 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
                 mHorizontalChartEntries = mMainActivity.getDataForHorizontalChart(mStartDate, mEndDate);
             }
         }
-        setExpenditurePieChartData(mExpendituresEntries, 100);
-        setIncomePieChartData(mIncomeEntries, 100);
+        setExpenditurePieChartData(mExpendituresEntries);
+        setIncomePieChartData(mIncomeEntries);
         setHorizontalChartData(mHorizontalChartEntries);
     }
 
@@ -566,5 +561,26 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
             mEndDate = Long.valueOf(stringBuilder.toString());
             mEndDateButton.setText(mMainActivity.prettify(mEndDate));
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(this.toString(), "ON PAUSE");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i(this.toString(), "ON STOP");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.i(this.toString(), "ON SAVE INSTANCE");
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ALL_TIME_CHECKED, mAllTimeChecked);
+        outState.putLong(START_DATE, mStartDate);
+        outState.putLong(END_DATE, mEndDate);
     }
 }
