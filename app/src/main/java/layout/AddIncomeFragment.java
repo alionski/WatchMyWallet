@@ -36,6 +36,8 @@ public class AddIncomeFragment extends BaseFragment {
     private final String CATEGORY = "category";
     private final String DATE = "date";
 
+    private Cursor mSpinnerCursor;
+
     private EditText mEtTitle;
     private EditText mEtSum;
     private Spinner mSpinnerCategory;
@@ -50,25 +52,6 @@ public class AddIncomeFragment extends BaseFragment {
 
     public AddIncomeFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.i(this.toString(), "ON ACTIVITY CREATED");
-        if (savedInstanceState != null) {
-            restoreState(savedInstanceState);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.i(this.toString(), "ON ATTACH");
-
-        if (context instanceof MainActivity){
-            mMainActivity = (MainActivity) context;
-        }
     }
 
     @Override
@@ -89,14 +72,6 @@ public class AddIncomeFragment extends BaseFragment {
         mAmountString = savedInstanceState.getString(SUM);
         mDate = savedInstanceState.getLong(DATE);
         mCategory = savedInstanceState.getInt(CATEGORY);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            restoreState(savedInstanceState);
-        }
     }
 
     @Override
@@ -127,10 +102,10 @@ public class AddIncomeFragment extends BaseFragment {
 
         mEtSum.setText(mAmountString);
 
+        mSpinnerCursor = mMainActivity.getDBController().getIncomeCategories();
         mSpinnerCategory = view.findViewById(R.id.spinner_cat_new_income_fragment);
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(getContext(),
-                android.R.layout.simple_list_item_1,
-                mMainActivity.getDBController().getIncomeCategories(),
+                android.R.layout.simple_list_item_1, mSpinnerCursor,
                 new String[] { Contract.IncCats.COLUMN_INC_CAT_NAME },
                 new int[] { android.R.id.text1 },
                 1);
@@ -244,6 +219,14 @@ public class AddIncomeFragment extends BaseFragment {
     public void onStop() {
         super.onStop();
         Log.i(this.toString(), "ON STOP");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mSpinnerCursor != null ) {
+            mSpinnerCursor.close();
+        }
     }
 
     @Override

@@ -2,8 +2,25 @@ package layout;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,9 +38,7 @@ import se.mah.aliona.watchmywallet.beans.Income;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TransferDetailFragment extends BaseFragment {
-    public static final int EXPENDITURES = 1;
-    public static final int INCOME = 2;
+public class TransferDetailFragment extends BaseFragment implements View.OnClickListener {
     private static final String TYPE = "detail_type";
     private static final String TRANSFER_OBJECT = "transfer_object";
 
@@ -31,16 +46,13 @@ public class TransferDetailFragment extends BaseFragment {
     private Income mInc;
 
     private int mType;
-    private int mId;
-    private String mTitle;
-    private double mAmount;
-    private long mDate;
-    private String mCategory;
 
+    private CoordinatorLayout mLayout;
     private TextView mTitleValue;
     private TextView mAmountValue;
     private TextView mDateValue;
     private TextView mCategoryValue;
+    private FloatingActionButton mDeleteButton;
 
 
     public TransferDetailFragment() {
@@ -119,17 +131,38 @@ public class TransferDetailFragment extends BaseFragment {
         mAmountValue = view.findViewById(R.id.trans_detail_value_sum);
         mDateValue = view.findViewById(R.id.trans_detail_value_date);
         mCategoryValue = view.findViewById(R.id.trans_detail_value_cat);
+        mDeleteButton = view.findViewById(R.id.transfer_detail_delete_button);
+        mDeleteButton.setOnClickListener(this);
+        // TODO: is it actually lookig cool?..
+        mLayout = view.findViewById(R.id.transfer_detail_coordinator_layout);
+//        mLayout.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.lightGray));
 
-        if (exp != null) {
+        if (exp != null && mType == EXPENDITURES) {
             mTitleValue.setText(exp.getExpTitle());
-            mAmountValue.setText(String.valueOf(exp.getExpCost()));
+            mAmountValue.setText("-" + String.valueOf(exp.getExpCost()));
             mDateValue.setText(MainActivity.prettify(exp.getExpDate()));
             mCategoryValue.setText(exp.getExpCat());
-        } else if (inc != null){
+
+//            mTitleValue.setTextColor(ContextCompat.getColor(getContext(), R.color.expenditureColor));
+            mAmountValue.setTextColor(ContextCompat.getColor(getContext(), R.color.expenditureColor));
+//            mDateValue.setTextColor(ContextCompat.getColor(getContext(), R.color.expenditureColor));
+//            mCategoryValue.setTextColor(ContextCompat.getColor(getContext(), R.color.expenditureColor));
+
+//            Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_mood_bad_grey_300_24dp);
+//            BitmapDrawable drawable = new BitmapDrawable(getContext().getResources(),bitmap);
+//            drawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+//            mLayout.setBackground(drawable);
+
+        } else if (inc != null && mType == INCOME){
             mTitleValue.setText(inc.getIncTitle());
             mAmountValue.setText(String.valueOf(inc.getIncAmount()));
             mDateValue.setText(MainActivity.prettify(inc.getIncDate()));
             mCategoryValue.setText(inc.getIncCat());
+
+//            mTitleValue.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccentGreen));
+            mAmountValue.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccentGreen));
+//            mDateValue.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccentGreen));
+//            mCategoryValue.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccentGreen));
         }
     }
 
@@ -155,5 +188,36 @@ public class TransferDetailFragment extends BaseFragment {
     public void onStop() {
         super.onStop();
         Log.i(this.toString(), "ON STOP");
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view == mDeleteButton) {
+            showConfirmationDialog();
+        }
+    }
+
+    private void showConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Delete this transfer?")
+                .setCancelable(false)
+                .setPositiveButton("Yes!", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        if (mType == EXPENDITURES) {
+                            mMainActivity.deleteTransfer(EXPENDITURES, mExp.getExpID());
+                        } else if (mType == INCOME) {
+                            mMainActivity.deleteTransfer(INCOME, mInc.getIncID());
+                        }
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

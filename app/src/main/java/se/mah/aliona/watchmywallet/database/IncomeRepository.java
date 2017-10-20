@@ -153,4 +153,10 @@ public class IncomeRepository {
         cursor.close();
         return inc;
     }
+
+    public void deleteIncome(int id) {
+        SQLiteDatabase db = ctrl.openDatabase();
+        String params = String.valueOf(id);
+        db.delete(Contract.Inc.TABLE_NAME, Contract.Inc._ID + "=" + params, null);
+    }
 }

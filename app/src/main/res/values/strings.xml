@@ -31,7 +31,7 @@
     <string name="button_continue">Continue</string>
 
     <!--Settings Fragment-->
-    <string name="settings_message">Having an identity crisis, ** **? \nWant to hide your taxes? \nAnother interesting reason? \nChange your name and surname here:</string>
+    <string name="settings_message">Having an identity crisis, %1$s %2$s? \nWant to hide your taxes? \nAnother interesting reason? \nChange your name and surname here:</string>
     <string name="settings_input_name">New Name</string>
     <string name="settings_input_surame">New Surname</string>
     <string name="settings_button_done">Go for it!</string>
@@ -65,7 +65,10 @@
     <string name="select_time_span_text_view">Select time span:</string>
     <string name="select_category_text_view">Select category:</string>
 
-    <string name="statistics_intro_message">Here is how your economy looks, *****. Choose to see for all times or specific dates.</string>
+    <string name="statistics_intro_message">Here is how your economy looks, %1$s. Choose to see for all times or specific dates.</string>
+    <string name="statistics_low_balance">Oooops! Looks like you went under budget in this period.</string>
+    <string name="statistics_high_balance">Well done! You spent less than you earned in this period.</string>
+    <string name="statistics_equal_balance">It\'s hard to believe, but you have spent exactly the same amount of money that you\'ve earned in this period</string>
     <string name="title_activity_scanner">ScannerActivity</string>
 
     <!--Barcodes-->

@@ -51,11 +51,6 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
     private static final String TRANSFER_TYPE = "transfer_type";
     private static final String TRANSFER_CATEGORY = "transfer_category";
 
-
-    public static final int ALL = 0;
-    public static final int EXPENDITURES = 1;
-    public static final int INCOME = 2;
-
     private static int CURSOR_TYPE;
     private Cursor mListViewCursor;
     private Cursor mIncomeCatsCursor;
@@ -595,9 +590,15 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mListViewCursor.close();
-        mIncomeCatsCursor.close();
-        mExpenditureCatsCursor.close();
+        if (mListViewCursor != null) {
+            mListViewCursor.close();
+        }
+        if (mIncomeCatsCursor != null) {
+            mIncomeCatsCursor.close();
+        }
+        if (mExpenditureCatsCursor != null) {
+            mExpenditureCatsCursor.close();
+        }
     }
 
     @Override

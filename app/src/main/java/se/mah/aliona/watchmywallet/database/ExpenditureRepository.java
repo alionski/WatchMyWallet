@@ -183,6 +183,13 @@ public class ExpenditureRepository {
             return barcode;
         }
     }
+
+    public void deleteExpenditure(int id) {
+        SQLiteDatabase db = ctrl.openDatabase();
+        String params = String.valueOf(id);
+        db.delete(Contract.Exp.TABLE_NAME, Contract.Exp._ID + "=" + params, null);
+
+    }
 }
 
 

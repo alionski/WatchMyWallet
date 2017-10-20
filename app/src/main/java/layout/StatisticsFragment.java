@@ -2,6 +2,7 @@ package layout;
 
 
 import android.app.DatePickerDialog;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -80,6 +81,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
     public void onStart() {
         super.onStart();
         Log.i(this.toString(), "ON START");
+        setPieChartVisibility();
     }
 
     @Override
@@ -108,6 +110,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         View view = inflater.inflate(R.layout.fragment_statistics, container, false);
 
         initialiseUI(view);
+
         return view;
     }
 
@@ -135,9 +138,10 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         mHorizontalChartEntries = mMainActivity.getDataForHorizontalChart(mStartDate,mEndDate);
 
         mTopMessage = view.findViewById(R.id.stats_message_top);
-        mTopMessage.setText(
-                "Here is how your economy looks, " + mName + ". Choose to see for all time or specific dates."
-        );
+        Resources res = mMainActivity.getResources();
+        String statsMessage = res.getString(R.string.statistics_intro_message, mName);
+        mTopMessage.setText(statsMessage);
+
         mBalanceMessage = view.findViewById(R.id.stats_balance_message);
 
         mStartDateButton = view.findViewById(R.id.stats_button_start_date);
@@ -321,9 +325,6 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
     private void setExpenditurePieChartData(ArrayList<PieEntry> dbEntries) {
 
         ArrayList<PieEntry> entries = dbEntries;
-        for (PieEntry entry : entries) {
-            Log.i(this.toString(), entry.getLabel() + " " + entry.getValue());
-        }
 
         PieDataSet dataSet = new PieDataSet(entries, "Your expenses");
 
@@ -336,23 +337,8 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
 
-//        for (int c : ColorTemplate.VORDIPLOM_COLORS)
-//            colors.add(c);
-
         for (int c : ColorTemplate.MATERIAL_COLORS)
             colors.add(c);
-
-//        for (int c : ColorTemplate.JOYFUL_COLORS)
-//            colors.add(c);
-//
-//        for (int c : ColorTemplate.COLORFUL_COLORS)
-//            colors.add(c);
-//
-//        for (int c : ColorTemplate.LIBERTY_COLORS)
-//            colors.add(c);
-//
-//        for (int c : ColorTemplate.PASTEL_COLORS)
-//            colors.add(c);
 
         colors.add(ColorTemplate.getHoloBlue());
 
@@ -459,13 +445,14 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
     }
 
     private void setBalanceMessage(float exp, float inc) {
+        Resources res = mMainActivity.getResources();
         String msg;
         if (exp > inc) {
-            msg = "Oooops! Looks like you went under budget in this period.";
+            msg = res.getString(R.string.statistics_low_balance);
         } else if (inc > exp) {
-            msg = "Well done! You spent less than you earned in this period.";
+            msg = res.getString(R.string.statistics_high_balance);
         } else {
-            msg = "It's hard to believe, but you have spent exactly the same amount of money that you've earned in this period.";
+            msg = res.getString(R.string.statistics_equal_balance);
         }
         mBalanceMessage.setText(msg);
     }
@@ -491,6 +478,8 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         setExpenditurePieChartData(mExpendituresEntries);
         setIncomePieChartData(mIncomeEntries);
         setHorizontalChartData(mHorizontalChartEntries);
+
+        setPieChartVisibility();
     }
 
     @Override
@@ -519,6 +508,37 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
             mStartDateButton.setEnabled(true);
             mEndDateButton.setEnabled(true);
         }
+    }
+
+    public void setPieChartVisibility() {
+        float sum = 0;
+        for (PieEntry entry : mIncomeEntries) {
+            Log.i(this.toString(), entry.getLabel() + " " + entry.getValue());
+            sum += entry.getValue();
+        }
+
+        if (sum == 0) {
+            getView().findViewById(R.id.inc_pie_chart_text).setVisibility(View.GONE);
+            mIncomePieChart.setVisibility(View.GONE);
+        } else {
+            getView().findViewById(R.id.inc_pie_chart_text).setVisibility(View.VISIBLE);
+            mIncomePieChart.setVisibility(View.VISIBLE);
+        }
+
+        float sum2 = 0;
+        for (PieEntry entry : mExpendituresEntries) {
+            Log.i(this.toString(), entry.getLabel() + " " + entry.getValue());
+            sum2 += entry.getValue();
+        }
+
+        if (sum2 == 0) {
+            getView().findViewById(R.id.exp_pie_chart_text).setVisibility(View.GONE);
+            mExpendituresPieChart.setVisibility(View.GONE);
+        } else {
+            getView().findViewById(R.id.exp_pie_chart_text).setVisibility(View.VISIBLE);
+            mExpendituresPieChart.setVisibility(View.VISIBLE);
+        }
+
     }
 
     private class StartDatePickerListener implements DatePickerDialog.OnDateSetListener {

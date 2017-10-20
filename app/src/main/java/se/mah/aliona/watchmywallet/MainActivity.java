@@ -41,6 +41,7 @@ import barcode.BarcodeCaptureActivity;
 import layout.AddExpenditureFragment;
 import layout.AddIncomeFragment;
 import layout.AddNewTransferPopup;
+import layout.BaseFragment;
 import layout.SettingsFragment;
 import layout.StatisticsFragment;
 import layout.TransferDetailFragment;
@@ -68,12 +69,12 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
     public static final int NEW_INC = 4;
     public static final int TRANS_DETAIL = 5;
 
-    public static final String TRANSFERS_ID = "transfers";
-    public static final String STATISTICS_ID = "stats";
-    public static final String SETTINGS_ID = "settings";
-    public static final String NEW_EXP_ID = "new_exp";
-    public static final String NEW_INC_ID = "new_inc";
-    public static final String TRANS_DETAIL_ID = "trans_detail";
+    public static final String TRANSFERS_TAG = "transfers";
+    public static final String STATISTICS_TAG = "stats";
+    public static final String SETTINGS_TAG = "settings";
+    public static final String NEW_EXP_TAG = "new_exp";
+    public static final String NEW_INC_TAG = "new_inc";
+    public static final String TRANS_DETAIL_TAG = "trans_detail";
 
     public static final String[] mOptionsList = {"Transfers", "Statistics", "Settings"};
 
@@ -198,47 +199,45 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
         switch (position) {
             case TRANSFERS:
                 closeDrawer(position, mOptionsList[position]);
-                TransfersFragment trans = (TransfersFragment) fm.findFragmentByTag(TRANSFERS_ID);
+                TransfersFragment trans = (TransfersFragment) fm.findFragmentByTag(TRANSFERS_TAG);
 
                 if (trans == null) {
                     trans = new TransfersFragment();
                 }
 
                 fm.beginTransaction()
-                        .replace(R.id.fragment_main_holder, trans, TRANSFERS_ID)
+                        .replace(R.id.fragment_main_holder, trans, TRANSFERS_TAG)
                         .commit();
                 break;
             case STATISTICS:
                 closeDrawer(position, mOptionsList[position]);
-                StatisticsFragment stats = (StatisticsFragment) fm.findFragmentByTag(STATISTICS_ID);
+                StatisticsFragment stats = (StatisticsFragment) fm.findFragmentByTag(STATISTICS_TAG);
 
                 if (stats == null) {
                     stats = new StatisticsFragment();
+                    stats.setUserName(mUserName, mUserSurname);
                 }
 
-                stats.setUserName(mUserName, mUserSurname);
-
                 fm.beginTransaction()
-                        .replace(R.id.fragment_main_holder, stats, STATISTICS_ID)
+                        .replace(R.id.fragment_main_holder, stats, STATISTICS_TAG)
                         .commit();
                 break;
             case SETTINGS:
                 closeDrawer(position, mOptionsList[position]);
-                SettingsFragment settings = (SettingsFragment) fm.findFragmentByTag(SETTINGS_ID);
+                SettingsFragment settings = (SettingsFragment) fm.findFragmentByTag(SETTINGS_TAG);
 
                 if (settings == null) {
                     settings = new SettingsFragment();
+                    settings.setUserName(mUserName, mUserSurname);
                 }
 
-                settings.setUserName(mUserName, mUserSurname);
-
                 fm.beginTransaction()
-                        .replace(R.id.fragment_main_holder, settings, SETTINGS_ID)
+                        .replace(R.id.fragment_main_holder, settings, SETTINGS_TAG)
                         .commit();
                 closeDrawer(position, mOptionsList[position]);
                 break;
             case NEW_EXP:
-                AddExpenditureFragment exp = (AddExpenditureFragment) fm.findFragmentByTag(NEW_EXP_ID);
+                AddExpenditureFragment exp = (AddExpenditureFragment) fm.findFragmentByTag(NEW_EXP_TAG);
 
                 if (exp == null) {
                     exp = new AddExpenditureFragment();
@@ -247,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                 exp.setUserName(mUserName, mUserSurname);
 
                 FragmentTransaction transaction = fm.beginTransaction();
-                transaction.replace(R.id.fragment_main_holder, exp, NEW_EXP_ID);
+                transaction.replace(R.id.fragment_main_holder, exp, NEW_EXP_TAG);
                 if (CURRENT_FRAGMENT == TRANSFERS) {
                     transaction.addToBackStack("back_to_transfers");
                 }
@@ -258,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
 
                 break;
             case NEW_INC:
-                AddIncomeFragment inc = (AddIncomeFragment) fm.findFragmentByTag(NEW_INC_ID);
+                AddIncomeFragment inc = (AddIncomeFragment) fm.findFragmentByTag(NEW_INC_TAG);
 
                 if (inc == null) {
                     inc = new AddIncomeFragment();
@@ -266,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                 inc.setUserName(mUserName, mUserSurname);
 
                 FragmentTransaction transaction2 = fm.beginTransaction();
-                transaction2.replace(R.id.fragment_main_holder, inc, NEW_INC_ID);
+                transaction2.replace(R.id.fragment_main_holder, inc, NEW_INC_TAG);
                 if (CURRENT_FRAGMENT == TRANSFERS) {
                     transaction2.addToBackStack("back_to_transfers");
                 }
@@ -275,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                 setTitle("Add New Income");
                 break;
             case TRANS_DETAIL:
-                TransferDetailFragment transDetail = (TransferDetailFragment) fm.findFragmentByTag(TRANS_DETAIL_ID);
+                TransferDetailFragment transDetail = (TransferDetailFragment) fm.findFragmentByTag(TRANS_DETAIL_TAG);
 
                 if (transDetail == null) {
                     if (expDetail != null) {
@@ -286,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                 }
 
                 FragmentTransaction transaction3 = fm.beginTransaction();
-                transaction3.replace(R.id.fragment_main_holder, transDetail, TRANS_DETAIL_ID);
+                transaction3.replace(R.id.fragment_main_holder, transDetail, TRANS_DETAIL_TAG);
                 if (CURRENT_FRAGMENT == TRANSFERS) {
                     transaction3.addToBackStack("back_to_transfers");
                 }
@@ -428,6 +427,15 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
 
     public Cursor getAllTransfersList(long start, long end) {
         return mDBController.getAllTransfers(start, end);
+    }
+
+    public void deleteTransfer(int type, int id) {
+        if (type == BaseFragment.EXPENDITURES) {
+            mDBController.deleteExpenditure(id);
+        } else if (type == BaseFragment.INCOME) {
+            mDBController.deleteIncome(id);
+        }
+        setNewFragment(TRANSFERS, null, null);
     }
 
     public ArrayList<PieEntry> getDataForExpPieChart(long start, long end) {
@@ -581,7 +589,7 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
 
                     AddExpenditureFragment exp =
-                            (AddExpenditureFragment) getSupportFragmentManager().findFragmentByTag(NEW_EXP_ID);
+                            (AddExpenditureFragment) getSupportFragmentManager().findFragmentByTag(NEW_EXP_TAG);
 
                     WalletBarcode dbBarcode =
                             mDBController.getBarcode(Long.parseLong(barcode.displayValue));

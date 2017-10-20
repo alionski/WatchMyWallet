@@ -1,6 +1,7 @@
 package layout;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -29,10 +30,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     private String mNewSurnameString;
 
 
-    public SettingsFragment() {
-        // Required empty public constructor
-    }
-
+    public SettingsFragment() {    }
 
     @Override
     public void onStart() {
@@ -87,10 +85,9 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     }
 
     private void setMessage() {
-        String message = "Having an identity crisis,\n" + mName + " " + mSurname +
-                "?\nWant to hide your taxes? \nAnother interesting reason? \nChange your name and surname here:";
-        mMessageText.setText(message);
-        Log.i(this.toString(), message);
+        Resources res = mMainActivity.getResources();
+        String settingsMessage = res.getString(R.string.settings_message, mName, mSurname);
+        mMessageText.setText(settingsMessage);
     }
 
     @Override

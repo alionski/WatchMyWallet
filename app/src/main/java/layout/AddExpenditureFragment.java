@@ -298,7 +298,9 @@ public class AddExpenditureFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mCategoryCursor.close();
+        if (mCategoryCursor != null ) {
+            mCategoryCursor.close();
+        }
     }
 
     @Override

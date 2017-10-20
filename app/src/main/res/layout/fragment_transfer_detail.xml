@@ -1,9 +1,10 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/transfer_detail_coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingEnd="20dp"
+    android:paddingEnd="0dp"
     app:layout_gravity="right"
     tools:context="layout.TransferDetailFragment">
 
@@ -103,4 +104,15 @@
             app:layout_gravity="start" />
     </android.support.v7.widget.GridLayout>
 
-</FrameLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/transfer_detail_delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        app:fabSize="normal"
+        app:layout_anchorGravity="bottom|right|end"
+        app:srcCompat="@drawable/ic_delete_forever_black_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>

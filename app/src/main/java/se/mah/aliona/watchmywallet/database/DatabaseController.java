@@ -140,4 +140,12 @@ public class DatabaseController {
     public void saveExpBarcode(int barcodeId, int expId) {
         mExpRepo.saveExpBarcode(barcodeId, expId);
     }
+
+    public void deleteExpenditure(int id) {
+        mExpRepo.deleteExpenditure(id);
+    }
+
+    public void deleteIncome(int id) {
+        mIncomeRepo.deleteIncome(id);
+    }
 }
