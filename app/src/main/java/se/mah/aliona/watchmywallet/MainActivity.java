@@ -7,10 +7,12 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
@@ -53,7 +55,8 @@ import se.mah.aliona.watchmywallet.database.DatabaseController;
 import se.mah.aliona.watchmywallet.database.Contract;
 import se.mah.aliona.watchmywallet.database.TransfersRepository;
 
-public class MainActivity extends AppCompatActivity implements AddNewTransferPopup.Callback {
+public class MainActivity extends AppCompatActivity implements AddNewTransferPopup.Callback,
+        NavigationView.OnNavigationItemSelectedListener {
     private String mUserName;
     private String mUserSurname;
 
@@ -80,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
 
     private DatabaseController mDBController;
     private ListView mDrawerList;
-    private DrawerLayout mDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
@@ -100,34 +102,20 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
 
         Toolbar appToolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(appToolbar);
-        mDrawerRelativeLayout = findViewById(R.id.drawer_relative_layout);
-        mDrawer = findViewById(R.id.main_drawer_layout);
-        mDrawerList = findViewById(R.id.left_drawer_list_view);
-        mDrawerList.setAdapter(new DrawerAdapter(this, R.layout.drawer_list_item,
-                mOptionsList));
-        mDrawerList.setOnItemClickListener(new DrawerOnItemClickListener());
 
-        mDrawerTitle = mTitle = getTitle();
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer, R.string.drawer_open, R.string.drawer_closed) {
+        DrawerLayout drawer = findViewById(R.id.main_drawer_layout);
 
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-//                getSupportActionBar().setTitle(mTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-//                getSupportActionBar().setTitle(mDrawerTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
+//        mDrawerTitle = mTitle = getTitle();
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this, drawer, appToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         // Set the drawer toggle as the DrawerListener
-        mDrawer.addDrawerListener(mDrawerToggle);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        drawer.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setHomeButtonEnabled(true);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         initialisePreferences();
         setNewFragment(CURRENT_FRAGMENT, null, null);
@@ -198,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
 
         switch (position) {
             case TRANSFERS:
-                closeDrawer(position, mOptionsList[position]);
                 TransfersFragment trans = (TransfersFragment) fm.findFragmentByTag(TRANSFERS_TAG);
 
                 if (trans == null) {
@@ -210,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                         .commit();
                 break;
             case STATISTICS:
-                closeDrawer(position, mOptionsList[position]);
                 StatisticsFragment stats = (StatisticsFragment) fm.findFragmentByTag(STATISTICS_TAG);
 
                 if (stats == null) {
@@ -223,7 +209,6 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                         .commit();
                 break;
             case SETTINGS:
-                closeDrawer(position, mOptionsList[position]);
                 SettingsFragment settings = (SettingsFragment) fm.findFragmentByTag(SETTINGS_TAG);
 
                 if (settings == null) {
@@ -234,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                 fm.beginTransaction()
                         .replace(R.id.fragment_main_holder, settings, SETTINGS_TAG)
                         .commit();
-                closeDrawer(position, mOptionsList[position]);
                 break;
             case NEW_EXP:
                 AddExpenditureFragment exp = (AddExpenditureFragment) fm.findFragmentByTag(NEW_EXP_TAG);
@@ -615,57 +599,22 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
         }
     }
 
-    private class DrawerOnItemClickListener implements ListView.OnItemClickListener {
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            mClickedItem = i;
-            setNewFragment(mClickedItem, null, null);
-        }
-    }
+        int id = item.getItemId();
 
-    private class DrawerAdapter extends ArrayAdapter<String> {
-        private String[] options;
-
-        public DrawerAdapter(Context context, int layout, String[] optionsList) {
-            super(context, layout, optionsList);
-            options = optionsList;
+        if (id == R.id.nav_transfers) {
+            setNewFragment(TRANSFERS, null, null);
+        } else if (id == R.id.nav_stats) {
+            setNewFragment(STATISTICS, null, null);
+        } else if (id == R.id.nav_settings) {
+            setNewFragment(SETTINGS, null, null);
         }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.drawer_list_item, parent, false);
-            }
-            ImageView imgIcon = convertView.findViewById(R.id.icon_drawer_menu);
-            int source = 0;
-            switch (position) {
-                case 0: source = R.drawable.ic_attach_money_black_24dp;
-                    break;
-                case 1: source = R.drawable.ic_insert_chart_black_24dp;
-                    break;
-                case 2: source = R.drawable.ic_settings_black_24dp;
-                    break;
-            }
-            imgIcon.setImageResource(source);
-
-            TextView tvOption = convertView.findViewById(R.id.drawer_list_item);
-            tvOption.setText(options[position]);
-            // TODO: change here !!
-            if (position == CURRENT_FRAGMENT) {
-                tvOption.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-            } else {
-                tvOption.setTextColor(ContextCompat.getColor(getContext(), android.R.color.black));
-            }
-            return convertView;
-        }
-    }
-
-    public void closeDrawer(int pos, String title) {
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(pos, true);
-        setTitle(title);
-        mDrawer.closeDrawer(mDrawerRelativeLayout);
+        DrawerLayout drawer = findViewById(R.id.main_drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     public void onStop() {
