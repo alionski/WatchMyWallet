@@ -9,6 +9,7 @@
 
 
     <application
+        android:name=".WatchMyWalletApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:fullBackupContent="false"

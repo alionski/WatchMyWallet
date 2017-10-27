@@ -195,6 +195,9 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                 fm.beginTransaction()
                         .replace(R.id.fragment_main_holder, trans, TRANSFERS_TAG)
                         .commit();
+
+                setTitle("Transfers");
+
                 break;
             case STATISTICS:
                 StatisticsFragment stats = (StatisticsFragment) fm.findFragmentByTag(STATISTICS_TAG);
@@ -207,6 +210,9 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                 fm.beginTransaction()
                         .replace(R.id.fragment_main_holder, stats, STATISTICS_TAG)
                         .commit();
+
+                setTitle("Statistics");
+
                 break;
             case SETTINGS:
                 SettingsFragment settings = (SettingsFragment) fm.findFragmentByTag(SETTINGS_TAG);
@@ -219,6 +225,9 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                 fm.beginTransaction()
                         .replace(R.id.fragment_main_holder, settings, SETTINGS_TAG)
                         .commit();
+
+                setTitle("Settings");
+
                 break;
             case NEW_EXP:
                 AddExpenditureFragment exp = (AddExpenditureFragment) fm.findFragmentByTag(NEW_EXP_TAG);
@@ -258,17 +267,17 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
                 setTitle("Add New Income");
                 break;
             case TRANS_DETAIL:
-                TransferDetailFragment transDetail = (TransferDetailFragment) fm.findFragmentByTag(TRANS_DETAIL_TAG);
+                TransferDetailFragment transDetail = new TransferDetailFragment();
 
-                if (transDetail == null) {
-                    if (expDetail != null) {
-                        transDetail = TransferDetailFragment.newInstance(expDetail);
-                    } else if (incDetail != null) {
-                        transDetail = TransferDetailFragment.newInstance(incDetail);
-                    }
+                if (expDetail != null) {
+                    transDetail = TransferDetailFragment.newInstance(expDetail);
+                } else if (incDetail != null) {
+                    transDetail = TransferDetailFragment.newInstance(incDetail);
                 }
 
                 FragmentTransaction transaction3 = fm.beginTransaction();
+                transaction3.setCustomAnimations(R.anim.slide_in_left,
+                        R.anim.slide_out_right);
                 transaction3.replace(R.id.fragment_main_holder, transDetail, TRANS_DETAIL_TAG);
                 if (CURRENT_FRAGMENT == TRANSFERS) {
                     transaction3.addToBackStack("back_to_transfers");
