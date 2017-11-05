@@ -1,7 +1,6 @@
 package layout;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -27,6 +26,8 @@ import se.mah.aliona.watchmywallet.beans.Income;
 import se.mah.aliona.watchmywallet.database.Contract;
 
 /**
+ *
+ * Fragment for adding new incomes.
  * A simple {@link Fragment} subclass.
  */
 
@@ -43,7 +44,6 @@ public class AddIncomeFragment extends BaseFragment {
     private Spinner mSpinnerCategory;
     private Button mButtonPickDate;
 
-    private Income mNewIncome;
     private String mTitle = "";
     private long mDate = 0;
     private int mCategory = 0;
@@ -159,16 +159,12 @@ public class AddIncomeFragment extends BaseFragment {
     }
 
     private void saveIncome() {
-        mNewIncome = new Income();
-        mNewIncome.setIncTitle(mTitle);
-        mNewIncome.setIncAmount(mAmount);
-        mNewIncome.setIncCatId(mCategory);
-        mNewIncome.setIncDate(mDate);
-
-//        Log.i(this.toString(),
-//                "\n" + mNewIncome.getIncTitle() + "\n" + mNewIncome.getIncAmount() + "\n"
-//                        + mNewIncome.getIncCatId() + "\n" + mNewIncome.getIncDate());
-        mMainActivity.saveIncomeToDB(mNewIncome);
+        Income newIncome = new Income();
+        newIncome.setIncTitle(mTitle);
+        newIncome.setIncAmount(mAmount);
+        newIncome.setIncCatId(mCategory);
+        newIncome.setIncDate(mDate);
+        mMainActivity.saveIncomeToDB(newIncome);
     }
 
     private boolean inputOK() {
@@ -180,7 +176,7 @@ public class AddIncomeFragment extends BaseFragment {
                 || mDate == 0
                 || mCategory == 0) {
             Snackbar snackbar = Snackbar.make(this.getView(),
-                    "One of the properties is missing!",
+                    R.string.input_not_ok,
                     Snackbar.LENGTH_SHORT);
             snackbar.show();
             return false;

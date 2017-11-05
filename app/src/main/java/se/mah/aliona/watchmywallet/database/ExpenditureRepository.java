@@ -4,24 +4,23 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-
 import se.mah.aliona.watchmywallet.beans.WalletBarcode;
 import se.mah.aliona.watchmywallet.beans.Expenditure;
 
 /**
+ * Repository for the table "expenditures".
  * Created by aliona on 2017-09-07.
  */
 
-public class ExpenditureRepository {
-    public static final int CURSOR_ID = 1;
+class ExpenditureRepository {
     private DatabaseController ctrl;
 
-    public ExpenditureRepository(DatabaseController ctrl) {
+    ExpenditureRepository(DatabaseController ctrl) {
         this.ctrl = ctrl;
     }
 
-    public long saveExpenditure(Expenditure exp) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    long saveExpenditure(Expenditure exp) {
+        SQLiteDatabase db = ctrl.getDatabase();
         ContentValues values = new ContentValues();
         values.put(Contract.Exp.COLUMN_NAME_TITLE, exp.getExpTitle());
         values.put(Contract.Exp.COLUMN_NAME_COST, exp.getExpCost());
@@ -30,8 +29,8 @@ public class ExpenditureRepository {
         return db.insert(Contract.Exp.TABLE_NAME, null, values);
     }
 
-    public long saveBarcode(WalletBarcode barcode) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    long saveBarcode(WalletBarcode barcode) {
+        SQLiteDatabase db = ctrl.getDatabase();
         ContentValues values = new ContentValues();
         values.put(Contract.Barcodes.COLUMN_NAME_BARCODE, barcode.getBarcodeNumber());
         values.put(Contract.Barcodes.COLUMN_NAME_PRODUCT_NAME, barcode.getProductName());
@@ -39,16 +38,16 @@ public class ExpenditureRepository {
         return db.insert(Contract.Barcodes.TABLE_NAME, null, values);
     }
 
-    public void saveExpBarcode(int barcodeId, int expId) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    void saveExpBarcode(int barcodeId, int expId) {
+        SQLiteDatabase db = ctrl.getDatabase();
         ContentValues values = new ContentValues();
         values.put(Contract.ExpBarcode.COLUMN_NAME_BARCODE_ID, barcodeId);
         values.put(Contract.ExpBarcode.COLUMN_NAME_EXPENDITURE_ID, expId);
         db.insert(Contract.ExpBarcode.TABLE_NAME, null, values);
     }
 
-    public Cursor getExpenditureList() {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getExpenditureList() {
+        SQLiteDatabase db = ctrl.getDatabase();
         String query = "SELECT exp." + Contract.Exp._ID +  ", " +
                     "exp." + Contract.Exp.COLUMN_NAME_TITLE + ", " +
                     "exp." + Contract.Exp.COLUMN_NAME_COST + ", " +
@@ -66,8 +65,8 @@ public class ExpenditureRepository {
         return cursor;
     }
 
-    public Cursor getExpenditureList(int cat) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getExpenditureList(int cat) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String[] params = new String[]{ String.valueOf(cat) };
         String query = "SELECT exp." + Contract.Exp._ID +  ", " +
                     "exp." + Contract.Exp.COLUMN_NAME_TITLE + ", " +
@@ -82,13 +81,11 @@ public class ExpenditureRepository {
                 " WHERE cats." + Contract.ExpCats._ID + "=?" +
                 " ORDER BY " + Contract.Exp.COLUMN_NAME_DATE + " DESC";
 
-        Cursor cursor = db.rawQuery(query, params);
-//        DatabaseUtils.dumpCursor(cursor);
-        return cursor;
+        return db.rawQuery(query, params);
     }
 
-    public Cursor getExpenditureList(int cat, long start, long end) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getExpenditureList(int cat, long start, long end) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String[] params = new String[]{ String.valueOf(cat), String.valueOf(start), String.valueOf(end) };
         String query = "SELECT exp." + Contract.Exp._ID +  ", " +
                         "exp." + Contract.Exp.COLUMN_NAME_TITLE + ", " +
@@ -105,14 +102,12 @@ public class ExpenditureRepository {
                     Contract.Exp.COLUMN_NAME_DATE + "<=?" +
                 " ORDER BY " + Contract.Exp.COLUMN_NAME_DATE + " DESC";
 
-        Cursor cursor = db.rawQuery(query, params);
-//        DatabaseUtils.dumpCursor(cursor);
-        return cursor;
+        return db.rawQuery(query, params);
     }
 
-    public Cursor getExpenditureList(long start, long end) {
+    Cursor getExpenditureList(long start, long end) {
         String[] params = new String[]{ String.valueOf(start), String.valueOf(end) };
-        SQLiteDatabase db = ctrl.openDatabase();
+        SQLiteDatabase db = ctrl.getDatabase();
         String query = "SELECT exp." + Contract.Exp._ID +  ", " +
                     "exp." + Contract.Exp.COLUMN_NAME_TITLE + ", " +
                     "exp." + Contract.Exp.COLUMN_NAME_COST + ", " +
@@ -128,12 +123,11 @@ public class ExpenditureRepository {
                     Contract.Exp.COLUMN_NAME_DATE + "<=?" +
                 " ORDER BY " + Contract.Exp.COLUMN_NAME_DATE + " DESC";
 
-        Cursor cursor = db.rawQuery(query, params);
-        return cursor;
+        return db.rawQuery(query, params);
     }
 
-    public Expenditure getExpenditure(int id) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Expenditure getExpenditure(int id) {
+        SQLiteDatabase db = ctrl.getDatabase();
         Expenditure exp = new Expenditure();
         String[] params = new String[]{String.valueOf(id) };
         String query = "SELECT exp." + Contract.Exp._ID +  ", " +
@@ -163,8 +157,8 @@ public class ExpenditureRepository {
         return exp;
     }
 
-    public WalletBarcode getBarcode(long barcodeNumber) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    WalletBarcode getBarcode(long barcodeNumber) {
+        SQLiteDatabase db = ctrl.getDatabase();
         WalletBarcode barcode = new WalletBarcode();
         String[] params = new String[]{String.valueOf(barcodeNumber) };
         String query =
@@ -184,8 +178,8 @@ public class ExpenditureRepository {
         }
     }
 
-    public void deleteExpenditure(int id) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    void deleteExpenditure(int id) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String params = String.valueOf(id);
         db.delete(Contract.Exp.TABLE_NAME, Contract.Exp._ID + "=" + params, null);
 

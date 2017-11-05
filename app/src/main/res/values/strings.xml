@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Watch My Wallet</string>
     <string name="app_author">Alena Hramyka</string>
+    <string name="app_icon_description">Icon for the app, a Swedish coin</string>
     <string name="preference_file_key">se.mah.aliona.watchmywallet.PREFERENCE_FILE_KEY</string>
     <string name="username">USERNAME</string>
     <string name="usersurname">USERSURNAME</string>
@@ -33,7 +34,10 @@
         <item>Income</item>
     </string-array>
 
-    <!-- Welcome Fragment -->
+    <string name="confirm_delete_transfer">Delete this transfer?</string>
+    <string name="image_view_iem_category_description">Icon for the transfer category</string>
+
+    <!-- WelcomeActivity -->
     <string name="welcome_message">Welcome to WatchMyWallet, new user! \nPlease enter your name and surname below:</string>
     <string name="input_name">Name</string>
     <string name="input_surame">Surname</string>
@@ -45,8 +49,6 @@
     <string name="settings_input_surame">New Surname</string>
     <string name="settings_button_done">Go for it!</string>
 
-    <!--Drawer-->
-
     <!--AddExpenditureFragment-->
     <string name="title_new_exp_fragment">Title:</string>
     <string name="amount_new_exp_fragment">Cost:</string>
@@ -54,6 +56,7 @@
     <string name="date_new_exp_fragment">Date:</string>
     <string name="button_done_new_exp_fragment">Done!</string>
     <string name="expenditure_barcode_label">Barcode:</string>
+    <string name="input_not_ok">One of the properties is missing!</string>
 
     <!--AddIncomeFragment-->
     <string name="title_new_income_fragment">Title:</string>
@@ -68,12 +71,16 @@
     <string name="expenditure_button_start_date">From date</string>
     <string name="expenditure_button_end_date">End date</string>
 
-    <!--All fragments with lists-->
+    <!--StatsFragment-->
 
     <string name="statistics_intro_message">Here is how your economy looks, %1$s. Choose to see for all times or specific dates.</string>
     <string name="statistics_low_balance">Oooops! Looks like you went under budget in this period.</string>
     <string name="statistics_high_balance">Well done! You spent less than you earned in this period.</string>
     <string name="statistics_equal_balance">It\'s hard to believe, but you have spent exactly the same amount of money that you\'ve earned in this period</string>
+    <string name="dates_missing">One of the dates is missing!</string>
+    <string name="wrong_dates">End date can\'t be before start date!</string>
+    <string name="income_label">Your income:</string>
+    <string name="expenditures_label">Your expenditures:</string>
 
     <!--Barcodes-->
     <string name="ok">OK</string>

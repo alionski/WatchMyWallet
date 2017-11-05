@@ -3,6 +3,7 @@ package se.mah.aliona.watchmywallet.beans;
 import java.io.Serializable;
 
 /**
+ * Bean representing a barcode. Used for the db.
  * Created by aliona on 2017-10-12.
  */
 

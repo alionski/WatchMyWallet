@@ -4,30 +4,31 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
+ * Repository for the table "expenditure_category".
  * Created by aliona on 2017-09-11.
  */
 
-public class ExpCategoryRepository {
+class ExpCategoryRepository {
     private DatabaseController ctrl;
     private String[] allColumns =
                     {Contract.ExpCats._ID,
                     Contract.ExpCats.COLUMN_EXP_CAT_NAME};
 
-    public ExpCategoryRepository(DatabaseController ctrl) {
+    ExpCategoryRepository(DatabaseController ctrl) {
         this.ctrl = ctrl;
     }
 
-    public Cursor getAllCategories() {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getAllCategories() {
+        SQLiteDatabase db = ctrl.getDatabase();
         String sortOrder =
                 Contract.ExpCats.COLUMN_EXP_CAT_NAME + " ASC";
-        Cursor cursor = db.query(Contract.ExpCats.TABLE_NAME,
+
+        return db.query(Contract.ExpCats.TABLE_NAME,
                 allColumns,
                 null,
                 null,
                 null,
                 null,
                 sortOrder);
-        return cursor;
     }
 }

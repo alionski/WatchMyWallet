@@ -1,13 +1,10 @@
 package se.mah.aliona.watchmywallet.database;
 
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Bundle;
-import android.util.Log;
 
 /**
+ * Repository for the table "transfers".
  * Created by aliona on 2017-10-05.
  */
 
@@ -22,12 +19,12 @@ public class TransfersRepository {
     public static final String EXP_SOURCE = "'expenditure'";
     private DatabaseController ctrl;
 
-    public TransfersRepository(DatabaseController ctrl) {
+    TransfersRepository(DatabaseController ctrl) {
         this.ctrl = ctrl;
     }
 
-    public Cursor getAllTransfersList() {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getAllTransfersList() {
+        SQLiteDatabase db = ctrl.getDatabase();
         String allTransfersQuery =
                 "SELECT " +
                         "exp." + Contract.Exp._ID + " as " + UNION_COLUMN_ID + ", " +
@@ -55,14 +52,11 @@ public class TransfersRepository {
                         Contract.Inc.COLUMN_NAME_CATEGORY + " = inc_cats." +
                         Contract.IncCats._ID +
                 " ORDER BY " + UNION_COLUMN_DATE +  " DESC";
-        Cursor cursor = db.rawQuery(allTransfersQuery, null);
-//        Log.i(this.toString(), String.valueOf(CURSOR_ID));
-        return cursor;
+        return db.rawQuery(allTransfersQuery, null);
     }
 
-    public Cursor getAllTransfersList(long start, long end) {
-        SQLiteDatabase db = ctrl.openDatabase();
-//        Log.i(this.toString(), "getAllTransfersList(long start, long end) reached");
+    Cursor getAllTransfersList(long start, long end) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String[] params = new String[]{ String.valueOf(start), String.valueOf(end), String.valueOf(start), String.valueOf(end)  };
         String allTransfersQuery =
                         "SELECT " +
@@ -98,12 +92,11 @@ public class TransfersRepository {
                         "income." + Contract.Inc.COLUMN_NAME_DATE + ">=? AND " +
                         "income." + Contract.Inc.COLUMN_NAME_DATE + "<=?" +
                     "ORDER BY " + UNION_COLUMN_DATE +  " DESC";
-        Cursor c = db.rawQuery(allTransfersQuery, params);
-        return c;
+        return db.rawQuery(allTransfersQuery, params);
     }
 
-    public Cursor getDataForHorizontalChart() {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getDataForHorizontalChart() {
+        SQLiteDatabase db = ctrl.getDatabase();
         String query =
                 "SELECT " +
                         "exp." + Contract.Exp._ID + " as " + UNION_COLUMN_ID + ", " +
@@ -118,13 +111,11 @@ public class TransfersRepository {
                         "SUM(income." + Contract.Inc.COLUMN_NAME_AMOUNT+ ") as " + UNION_COLUMN_AMOUNT + " " +
                     "FROM " + Contract.Inc.TABLE_NAME + " income " +
                     "GROUP BY " + UNION_COLUMN_SOURCE;
-//        Log.i(this.toString(), query);
-        Cursor c = db.rawQuery(query, null);
-        return c;
+        return db.rawQuery(query, null);
     }
 
-    public Cursor getDataForHorizontalChart(long start, long end) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getDataForHorizontalChart(long start, long end) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String[] params = new String[]{ String.valueOf(start), String.valueOf(end), String.valueOf(start), String.valueOf(end) };
         String allTransfersQuery =
                 "SELECT " +
@@ -146,13 +137,11 @@ public class TransfersRepository {
                         "income." + Contract.Inc.COLUMN_NAME_DATE + ">=? AND " +
                         "income." + Contract.Inc.COLUMN_NAME_DATE + "<=?" +
                     "GROUP BY " + UNION_COLUMN_SOURCE;
-//        Log.i(this.toString(), allTransfersQuery);
-        Cursor c = db.rawQuery(allTransfersQuery, params);
-        return c;
+        return db.rawQuery(allTransfersQuery, params);
     }
 
-    public Cursor getDataForExpPieChart(long start, long end) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getDataForExpPieChart(long start, long end) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String[] params = new String[]{ String.valueOf(start), String.valueOf(end) };
         String query =
                 "SELECT " + Contract.ExpCats.COLUMN_EXP_CAT_NAME  + ", " +
@@ -165,12 +154,11 @@ public class TransfersRepository {
                     "exp." + Contract.Exp.COLUMN_NAME_DATE + ">=? AND " +
                     "exp." + Contract.Exp.COLUMN_NAME_DATE + "<=? " +
                 "GROUP BY " + Contract.ExpCats.COLUMN_EXP_CAT_NAME;
-        Cursor c = db.rawQuery(query, params);
-        return c;
+        return db.rawQuery(query, params);
     }
 
-    public Cursor getDataForExpPieChart() {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getDataForExpPieChart() {
+        SQLiteDatabase db = ctrl.getDatabase();
         String query =
                 "SELECT " + Contract.ExpCats.COLUMN_EXP_CAT_NAME + ", " +
                         Contract.Exp.COLUMN_NAME_COST + " " +
@@ -179,12 +167,11 @@ public class TransfersRepository {
                         "ON exp." + Contract.Exp.COLUMN_NAME_CATEGORY + " = cats." +
                         Contract.ExpCats._ID + " " +
                         "GROUP BY " + Contract.ExpCats.COLUMN_EXP_CAT_NAME;
-        Cursor c = db.rawQuery(query, null);
-        return c;
+        return db.rawQuery(query, null);
     }
 
-    public Cursor getDataForIncPieChart(long start, long end) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getDataForIncPieChart(long start, long end) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String[] params = new String[]{ String.valueOf(start), String.valueOf(end) };
         String query =
                 "SELECT " + Contract.IncCats.COLUMN_INC_CAT_NAME + ", " +
@@ -197,12 +184,11 @@ public class TransfersRepository {
                         "exp." + Contract.Inc.COLUMN_NAME_DATE + ">=? AND " +
                         "exp." + Contract.Inc.COLUMN_NAME_DATE + "<=? " +
                         "GROUP BY " + Contract.IncCats.COLUMN_INC_CAT_NAME;
-        Cursor c = db.rawQuery(query, params);
-        return c;
+        return db.rawQuery(query, params);
     }
 
-    public Cursor getDataForIncPieChart() {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getDataForIncPieChart() {
+        SQLiteDatabase db = ctrl.getDatabase();
         String query =
                 "SELECT " + Contract.IncCats.COLUMN_INC_CAT_NAME + ", " +
                         Contract.Inc.COLUMN_NAME_AMOUNT + " " +
@@ -211,7 +197,6 @@ public class TransfersRepository {
                         "ON exp." + Contract.Inc.COLUMN_NAME_CATEGORY + " = cats." +
                         Contract.IncCats._ID + " " +
                         "GROUP BY " + Contract.IncCats.COLUMN_INC_CAT_NAME;
-        Cursor c = db.rawQuery(query, null);
-        return c;
+        return db.rawQuery(query, null);
     }
 }

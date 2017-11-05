@@ -29,16 +29,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import java.util.Calendar;
 import java.util.TimeZone;
-
 import se.mah.aliona.watchmywallet.MainActivity;
 import se.mah.aliona.watchmywallet.R;
 import se.mah.aliona.watchmywallet.database.Contract;
 import se.mah.aliona.watchmywallet.database.TransfersRepository;
 
 /**
+ * The main fragment that shows all the transfers and allows to choose which to display according to date, type and
+ * category.
  * A simple {@link Fragment} subclass.
  */
 public class TransfersFragment extends BaseFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -97,8 +97,6 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
     }
 
     protected void restoreState(Bundle savedInstanceState) {
-        Log.i(this.toString(), "Saved instance is not null!!!!!!!!!!!!!!!");
-
         mAllTimeChecked = savedInstanceState.getBoolean(ALL_TIME_CHECKED);
         mStartDate = savedInstanceState.getLong(START_DATE);
         mEndDate = savedInstanceState.getLong(END_DATE);
@@ -290,10 +288,10 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
             Log.i(this.toString(), "SHOW SPECIFIC DATES");
             // check if the dates are ok
             if (mStartDate == 0 || mEndDate == 0) {
-                    Snackbar snackbar = Snackbar.make(this.getView(), "One of the dates is missing!", Snackbar.LENGTH_SHORT);
+                    Snackbar snackbar = Snackbar.make(this.getView(), R.string.dates_missing, Snackbar.LENGTH_SHORT);
                     snackbar.show();
             } else if (mEndDate < mStartDate) {
-                    Snackbar snackbar = Snackbar.make(this.getView(), "End date can't be before start date!", Snackbar.LENGTH_SHORT);
+                    Snackbar snackbar = Snackbar.make(this.getView(), R.string.wrong_dates, Snackbar.LENGTH_SHORT);
                     snackbar.show();
             } else  {
                 // dates are chosen
@@ -350,7 +348,7 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
                 mAllTypesChecked = true;
                 mTransferTypesSpinner.setEnabled(false);
                 mTransferCatSpinner.setEnabled(false);
-            } else if (!checked) {
+            } else {
                 mAllTypesChecked = false;
                 mTransferTypesSpinner.setEnabled(true);
                 mTransferCatSpinner.setEnabled(true);
@@ -360,7 +358,7 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
                 mAllTimeChecked = true;
                 mStartDateButton.setEnabled(false);
                 mEndDateButton.setEnabled(false);
-            } else if (!checked) {
+            } else {
                 mAllTimeChecked = false;
                 mStartDateButton.setEnabled(true);
                 mEndDateButton.setEnabled(true);
@@ -370,7 +368,7 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
 
     private class TransfersListAdapter extends CursorAdapter {
 
-        public TransfersListAdapter(Context context, Cursor c, int flags) {
+        private TransfersListAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
         }
 
@@ -407,13 +405,14 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
             long date = cursor.getLong(cursor.getColumnIndexOrThrow(TransfersRepository.UNION_COLUMN_DATE));
 
             transferTitle.setText(title);
-            transferDate.setText(mMainActivity.prettify(date));
+            transferDate.setText(MainActivity.prettify(date));
 
             String source = "'" + cursor.getString(cursor.getColumnIndexOrThrow(TransfersRepository.UNION_COLUMN_SOURCE)) +"'";
             if (source.equals(TransfersRepository.EXP_SOURCE)) {
                 view.setBackgroundColor(ContextCompat.getColor(context, R.color.dirtyWhite));
                 transferAmount.setTextColor(ContextCompat.getColor(context, R.color.expenditureColor));
-                transferAmount.setText("-"+String.valueOf(amount));
+                String amt = "-"+String.valueOf(amount);
+                transferAmount.setText(amt);
             } else if (source.equals(TransfersRepository.INCOME_SOURCE)){
                 view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
                 transferAmount.setTextColor(ContextCompat.getColor(context, R.color.colorAccentGreen));
@@ -478,8 +477,9 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
             view.setBackgroundColor(ContextCompat.getColor(context, R.color.dirtyWhite));
             transferAmount.setTextColor(ContextCompat.getColor(context, R.color.expenditureColor));
             transferTitle.setText(title);
-            transferAmount.setText("-" + String.valueOf(amount));
-            transferDate.setText(mMainActivity.prettify(date));
+            String amt = "-" + String.valueOf(amount);
+            transferAmount.setText(amt);
+            transferDate.setText(MainActivity.prettify(date));
         }
 
         private void bindIncome(View view, Context context, Cursor cursor) {
@@ -506,7 +506,7 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
             transferAmount.setTextColor(ContextCompat.getColor(context, R.color.colorAccentGreen));
             transferTitle.setText(title);
             transferAmount.setText(String.valueOf(amount));
-            transferDate.setText(mMainActivity.prettify(date));
+            transferDate.setText(MainActivity.prettify(date));
         }
     }
 
@@ -527,7 +527,7 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
             }
             StringBuilder stringBuilder = new StringBuilder(year + month +day);
             mStartDate = Long.valueOf(stringBuilder.toString());
-            mStartDateButton.setText(mMainActivity.prettify(mStartDate));
+            mStartDateButton.setText(MainActivity.prettify(mStartDate));
         }
     }
 
@@ -548,14 +548,13 @@ public class TransfersFragment extends BaseFragment implements View.OnClickListe
             }
             StringBuilder stringBuilder = new StringBuilder(year + month +day);
             mEndDate = Long.valueOf(stringBuilder.toString());
-            mEndDateButton.setText(mMainActivity.prettify(mEndDate));
+            mEndDateButton.setText(MainActivity.prettify(mEndDate));
         }
     }
 
     private class TransfersListListener implements AdapterView.OnItemClickListener {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             mListViewCursor.moveToPosition(position);
-            Log.i(this.toString(), "POSITION: " + position);
             switch(CURSOR_TYPE) {
                 case ALL:
                     String source = "'" + mListViewCursor.getString(mListViewCursor.getColumnIndexOrThrow(TransfersRepository.UNION_COLUMN_SOURCE)) +"'";

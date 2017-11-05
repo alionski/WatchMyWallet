@@ -5,17 +5,17 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import se.mah.aliona.watchmywallet.R;
 
 /**
+ * Database helper that manages creation and upgrades of the db and enables writing/reading from it.
  * Created by aliona on 2017-09-07.
  */
 
 public class MyWalletDBHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 4;
-    public static final String DATABASE_NAME = "WatchMyWallet.db";
+    private static final int DATABASE_VERSION = 4;
+    private static final String DATABASE_NAME = "WatchMyWallet.db";
     private Context ctx;
 
     private static final String SQL_CREATE_EXPENDITURE_TABLE =
@@ -75,7 +75,7 @@ public class MyWalletDBHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_EXP_BARCODES_TABLE =
             "DROP TABLE IF EXISTS " + Contract.ExpBarcode.TABLE_NAME;
 
-    public MyWalletDBHelper(Context context) {
+    MyWalletDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         ctx = context;
     }

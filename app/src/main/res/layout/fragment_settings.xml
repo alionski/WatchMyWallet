@@ -7,7 +7,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:layout_editor_absoluteY="25dp"
         tools:layout_editor_absoluteX="0dp">
 
@@ -33,7 +33,6 @@
             android:layout_width="wrap_content"
             android:layout_height="43dp"
             android:layout_marginTop="59dp"
-            android:capitalize="words"
             android:ems="10"
             android:hint="@string/settings_input_name"
             android:inputType="textCapWords"
@@ -48,7 +47,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="23dp"
-            android:capitalize="words"
             android:ems="10"
             android:hint="@string/settings_input_surame"
             android:inputType="textCapWords"

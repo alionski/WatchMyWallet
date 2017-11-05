@@ -5,6 +5,7 @@ import android.app.Application;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
+ * Extended Application class. Needed only to launch LeakCanary.
  * Created by aliona on 2017-10-24.
  */
 

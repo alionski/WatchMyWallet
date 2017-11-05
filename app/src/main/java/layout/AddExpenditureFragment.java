@@ -1,8 +1,6 @@
 package layout;
 
-
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -32,6 +30,8 @@ import se.mah.aliona.watchmywallet.beans.Expenditure;
 import se.mah.aliona.watchmywallet.database.Contract;
 
 /**
+ *
+ * Fragment for adding a new expenditures.
  * A simple {@link Fragment} subclass.
  */
 public class AddExpenditureFragment extends BaseFragment {
@@ -78,7 +78,6 @@ public class AddExpenditureFragment extends BaseFragment {
     }
 
     protected void restoreState(Bundle savedInstanceState) {
-        Log.i(this.toString(), "Saved instance is not null!!!!!!!!!!!!!!!");
         mTitle = savedInstanceState.getString(TITLE);
         mAmountString = savedInstanceState.getString(SUM);
         mDate = savedInstanceState.getLong(DATE);
@@ -118,6 +117,10 @@ public class AddExpenditureFragment extends BaseFragment {
 
         mEtTitle = view.findViewById(R.id.edit_text_title_new_exp_fragment);
         mEtCost = view.findViewById(R.id.edit_text_sum_new_exp_fragment);
+
+        if (mAmountString != null) {
+            mEtCost.setText(mAmountString);
+        }
 
         if (mNewBarcode && mBarcodeNumber != 0) {
             showBarcode(String.valueOf(mBarcodeNumber));
@@ -224,7 +227,7 @@ public class AddExpenditureFragment extends BaseFragment {
                 || mDate == 0
                 || mCategory == 0) {
             Snackbar snackbar = Snackbar.make(this.getView(),
-                    "One of the properties is missing!",
+                    R.string.input_not_ok,
                     Snackbar.LENGTH_SHORT);
             snackbar.show();
             return false;

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import se.mah.aliona.watchmywallet.MainActivity;
 
 /**
+ * All fragment have to extend this super class.
  * Created by aliona on 2017-09-23.
  */
 
@@ -21,17 +22,6 @@ public abstract class BaseFragment extends Fragment {
     protected MainActivity mMainActivity;
     protected String mName;
     protected String mSurname;
-
-//    @Override
-//    public void onActivityCreated(Bundle savedInstanceState) {
-//        super.onActivityCreated(savedInstanceState);
-//        Log.i(this.toString(), "ON ACTIVITY CREATED");
-//    }
-//
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//    }
 
     @Override
     public void onAttach(Context context) {

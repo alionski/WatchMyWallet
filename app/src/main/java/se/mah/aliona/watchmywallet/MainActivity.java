@@ -11,7 +11,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,26 +18,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieEntry;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
-
 import java.util.ArrayList;
-
 import barcode.BarcodeCaptureActivity;
 import layout.AddExpenditureFragment;
 import layout.AddIncomeFragment;
@@ -79,15 +66,8 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
     public static final String NEW_INC_TAG = "new_inc";
     public static final String TRANS_DETAIL_TAG = "trans_detail";
 
-    public static final String[] mOptionsList = {"Transfers", "Statistics", "Settings"};
-
     private DatabaseController mDBController;
-    private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-    private CharSequence mDrawerTitle;
-    private CharSequence mTitle;
-    private RelativeLayout mDrawerRelativeLayout;
-    private int mClickedItem = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,16 +85,12 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
 
         DrawerLayout drawer = findViewById(R.id.main_drawer_layout);
 
-//        mDrawerTitle = mTitle = getTitle();
         mDrawerToggle = new ActionBarDrawerToggle(
                 this, drawer, appToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        // Set the drawer toggle as the DrawerListener
         drawer.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setHomeButtonEnabled(true);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         initialisePreferences();
@@ -149,8 +125,6 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // Handle your other action bar items...
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -161,19 +135,9 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
         return true;
     }
 
-//    /** Called whenever we call invalidateOptionsMenu() */
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        // If the nav drawer is open, hide action items related to the content view
-//        boolean drawerOpen = mDrawer.isDrawerOpen(mDrawerList);
-////        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
-//        return super.onPrepareOptionsMenu(menu);
-//    }
-
     @Override
     public void setTitle(CharSequence title) {
-        mTitle = title;
-        getSupportActionBar().setTitle(mTitle);
+        getSupportActionBar().setTitle(title);
     }
 
     public DatabaseController getDBController() {
@@ -330,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements AddNewTransferPop
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(res.getString(R.string.username), name);
         editor.putString(res.getString(R.string.usersurname), surname);
-        editor.commit();
+        editor.apply();
     }
 
     public String getUserName() {

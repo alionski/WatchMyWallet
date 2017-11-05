@@ -11,12 +11,5 @@
     </style>
 
     <!-- Our theme, edit here -->
-    <style name="CustomAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <!--<item name="android:windowBackground">@color/colorCustomBackground</item>-->
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
-        <!--<item name="colorPrimaryDark">@color/colorPrimary</item>-->
-        <!--<item name="colorAccent">@color/colorAccent</item>-->
-    </style>
 
 </resources>

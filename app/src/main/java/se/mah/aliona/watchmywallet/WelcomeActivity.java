@@ -8,10 +8,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 import layout.util.CustomButton;
+
+/**
+ * The first activity that the user sees, if the user opens the app for the first time.
+ * Its only purpose is to ask for a name and surname, then it starts the main activity.
+ */
 
 public class WelcomeActivity extends AppCompatActivity {
     private EditText mEtName;
@@ -40,10 +44,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private boolean newUser() {
-        if (mUserName == null || mUserSurname == null) {
-            return true;
-        }
-        return false;
+        return (mUserName == null || mUserSurname == null);
     }
 
     private void initialiseUI() {
@@ -57,9 +58,11 @@ public class WelcomeActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-            if (inputOk()) {
-                setUsernameSurname(mEtName.getText().toString(), mEtSurname.getText().toString());
-                startMainActivity();
+            if (view == mBtnContinue) {
+                if (inputOk()) {
+                    setUsernameSurname(mEtName.getText().toString(), mEtSurname.getText().toString());
+                    startMainActivity();
+                }
             }
         }
 
@@ -92,6 +95,6 @@ public class WelcomeActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(res.getString(R.string.username), name);
         editor.putString(res.getString(R.string.usersurname), surname);
-        editor.commit();
+        editor.apply();
     }
 }

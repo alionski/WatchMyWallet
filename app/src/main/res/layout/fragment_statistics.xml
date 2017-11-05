@@ -8,7 +8,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="vertical"
         android:weightSum="1">
 
@@ -107,8 +106,8 @@
             app:layout_constraintTop_toBottomOf="@+id/tran_detail_value_title"
             app:layout_constraintVertical_bias="0.0" />
 
-        <include layout="@layout/fragment_statistics_middle"></include>
-        <include layout="@layout/fragment_statistics_bottom"></include>
+        <include layout="@layout/fragment_statistics_middle"/>
+        <include layout="@layout/fragment_statistics_bottom"/>
 
     </LinearLayout>
 

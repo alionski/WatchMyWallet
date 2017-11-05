@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import se.mah.aliona.watchmywallet.R;
 
 /**
+ * Extended button. The only difference from a regular button is that it's green...
  * Created by aliona on 2017-10-10.
  */
 

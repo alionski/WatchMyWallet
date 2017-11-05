@@ -3,6 +3,7 @@ package se.mah.aliona.watchmywallet.beans;
 import java.io.Serializable;
 
 /**
+ * Bean representing an income from the db.
  * Created by aliona on 2017-09-11.
  */
 

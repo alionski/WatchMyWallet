@@ -45,6 +45,7 @@ import se.mah.aliona.watchmywallet.MainActivity;
 import se.mah.aliona.watchmywallet.R;
 
 /**
+ * Fragment that shows diagrams with an overview of expenses vs. income.
  * A simple {@link Fragment} subclass.
  */
 public class StatisticsFragment extends BaseFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -53,7 +54,6 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
     private static final String END_DATE = "end_date";
 
     private HorizontalBarChart mHorizontalChart;
-    private TextView mTopMessage;
     private TextView mBalanceMessage;
     private PieChart mExpendituresPieChart;
     private PieChart mIncomePieChart;
@@ -137,10 +137,10 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         mIncomeEntries = mMainActivity.getDataForIncPieChart(mStartDate,mEndDate);
         mHorizontalChartEntries = mMainActivity.getDataForHorizontalChart(mStartDate,mEndDate);
 
-        mTopMessage = view.findViewById(R.id.stats_message_top);
+        TextView topMessage = view.findViewById(R.id.stats_message_top);
         Resources res = mMainActivity.getResources();
         String statsMessage = res.getString(R.string.statistics_intro_message, mName);
-        mTopMessage.setText(statsMessage);
+        topMessage.setText(statsMessage);
 
         mBalanceMessage = view.findViewById(R.id.stats_balance_message);
 
@@ -224,9 +224,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         mExpendituresPieChart.setExtraOffsets(5, 10, 5, 5);
 
         mExpendituresPieChart.setDragDecelerationFrictionCoef(0.95f);
-
         mExpendituresPieChart.setCenterTextTypeface(mTfLight);
-//        mExpendituresPieChart.setCenterText(generateCenterSpannableText());
 
         mExpendituresPieChart.setDrawHoleEnabled(true);
         mExpendituresPieChart.setHoleColor(Color.WHITE);
@@ -247,7 +245,6 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         setExpenditurePieChartData(mExpendituresEntries);
 
         mExpendituresPieChart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
-        // mHorizontalChart.spin(2000, 0, 360);
 
         Legend l = mExpendituresPieChart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
@@ -257,11 +254,6 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         l.setXEntrySpace(7f);
         l.setYEntrySpace(0f);
         l.setYOffset(0f);
-//        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-//        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
-//        l.setOrientation(Legend.LegendOrientation.VERTICAL);
-//        l.setDrawInside(false);
-//        l.setEnabled(false);
 
         // entry label styling
         mExpendituresPieChart.setEntryLabelColor(Color.BLACK);
@@ -300,14 +292,12 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         yl.setDrawAxisLine(true);
         yl.setDrawGridLines(true);
         yl.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-//        yl.setInverted(true);
 
         YAxis yr = mHorizontalChart.getAxisRight();
         yr.setTypeface(mTfLight);
         yr.setDrawAxisLine(true);
         yr.setDrawGridLines(false);
         yr.setAxisMinimum(0f); // this replaces setStartAtZero(true)
-//        yr.setInverted(true);
 
         setHorizontalChartData(mHorizontalChartEntries);
         mHorizontalChart.setFitBars(true);
@@ -324,9 +314,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
 
     private void setExpenditurePieChartData(ArrayList<PieEntry> dbEntries) {
 
-        ArrayList<PieEntry> entries = dbEntries;
-
-        PieDataSet dataSet = new PieDataSet(entries, "Your expenses");
+        PieDataSet dataSet = new PieDataSet(dbEntries, "Your expenses");
 
         dataSet.setDrawIcons(false);
 
@@ -335,7 +323,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         dataSet.setSelectionShift(5f);
 
 
-        ArrayList<Integer> colors = new ArrayList<Integer>();
+        ArrayList<Integer> colors = new ArrayList<>();
 
         for (int c : ColorTemplate.MATERIAL_COLORS)
             colors.add(c);
@@ -343,7 +331,6 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         colors.add(ColorTemplate.getHoloBlue());
 
         dataSet.setColors(colors);
-        //dataSet.setSelectionShift(0f);
 
 //        dataSet.setValueLinePart1OffsetPercentage(80.f);
 //        dataSet.setValueLinePart1Length(0.2f);
@@ -366,9 +353,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
 
     private void setIncomePieChartData(ArrayList<PieEntry> dbEntries) {
 
-        ArrayList<PieEntry> entries = dbEntries;
-
-        PieDataSet dataSet = new PieDataSet(entries, "Your income");
+        PieDataSet dataSet = new PieDataSet(dbEntries, "Your income");
 
         dataSet.setDrawIcons(false);
 
@@ -376,9 +361,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         dataSet.setIconsOffset(new MPPointF(0, 40));
         dataSet.setSelectionShift(5f);
 
-        // add a lot of colors
-
-        ArrayList<Integer> colors = new ArrayList<Integer>();
+        ArrayList<Integer> colors = new ArrayList<>();
 
         for (int c : ColorTemplate.MATERIAL_COLORS)
             colors.add(c);
@@ -464,10 +447,10 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
             mHorizontalChartEntries = mMainActivity.getDataForHorizontalChart(0,0);
         } else {
             if (mStartDate == 0 || mEndDate == 0) {
-                Snackbar snackbar = Snackbar.make(this.getView(), "One of the dates is missing!", Snackbar.LENGTH_SHORT);
+                Snackbar snackbar = Snackbar.make(this.getView(), R.string.dates_missing, Snackbar.LENGTH_SHORT);
                 snackbar.show();
             } else if (mEndDate < mStartDate) {
-                Snackbar snackbar = Snackbar.make(this.getView(), "End date can't be before start date!", Snackbar.LENGTH_SHORT);
+                Snackbar snackbar = Snackbar.make(this.getView(), R.string.wrong_dates, Snackbar.LENGTH_SHORT);
                 snackbar.show();
             } else {
                 mExpendituresEntries = mMainActivity.getDataForExpPieChart(mStartDate, mEndDate);
@@ -504,7 +487,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
         if (checked) {
             mStartDateButton.setEnabled(false);
             mEndDateButton.setEnabled(false);
-        } else if (!checked) {
+        } else {
             mStartDateButton.setEnabled(true);
             mEndDateButton.setEnabled(true);
         }
@@ -558,7 +541,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
             }
             StringBuilder stringBuilder = new StringBuilder(year + month +day);
             mStartDate = Long.valueOf(stringBuilder.toString());
-            mStartDateButton.setText(mMainActivity.prettify(mStartDate));
+            mStartDateButton.setText(MainActivity.prettify(mStartDate));
         }
     }
 
@@ -579,7 +562,7 @@ public class StatisticsFragment extends BaseFragment implements View.OnClickList
             }
             StringBuilder stringBuilder = new StringBuilder(year + month +day);
             mEndDate = Long.valueOf(stringBuilder.toString());
-            mEndDateButton.setText(mMainActivity.prettify(mEndDate));
+            mEndDateButton.setText(MainActivity.prettify(mEndDate));
         }
     }
 

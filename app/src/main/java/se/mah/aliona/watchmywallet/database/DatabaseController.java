@@ -10,11 +10,12 @@ import se.mah.aliona.watchmywallet.beans.Expenditure;
 import se.mah.aliona.watchmywallet.beans.Income;
 
 /**
+ * Manages communication between MainActivity and repositories. Controls opening and closing of
+ * the database.
  * Created by aliona on 2017-09-11.
  */
 
 public class DatabaseController {
-    private SQLiteOpenHelper mDbHelper;
     private SQLiteDatabase mDatabase;
     private IncCategoryRepository mIncomeCats;
     private ExpCategoryRepository mExpenditureCats;
@@ -23,16 +24,17 @@ public class DatabaseController {
     private TransfersRepository mTransfersRepo;
 
     public DatabaseController(Context context) {
-        mDbHelper = new MyWalletDBHelper(context);
+        SQLiteOpenHelper dbHelper = new MyWalletDBHelper(context);
+        mDatabase = dbHelper.getWritableDatabase();
+
         mIncomeCats = new IncCategoryRepository(this);
         mExpenditureCats = new ExpCategoryRepository(this);
         mIncomeRepo = new IncomeRepository(this);
         mExpRepo = new ExpenditureRepository(this);
         mTransfersRepo = new TransfersRepository(this);
-        mDatabase = mDbHelper.getWritableDatabase();
     }
 
-    public  SQLiteDatabase openDatabase() {
+    public  SQLiteDatabase getDatabase() {
         return mDatabase;
     }
 

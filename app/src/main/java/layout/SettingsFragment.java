@@ -1,6 +1,5 @@
 package layout;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,10 +12,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import layout.util.CustomButton;
-import se.mah.aliona.watchmywallet.MainActivity;
 import se.mah.aliona.watchmywallet.R;
 
 /**
+ * Fragment where the user can change name and surname.
  * A simple {@link Fragment} subclass.
  */
 public class SettingsFragment extends BaseFragment implements View.OnClickListener {
@@ -99,15 +98,17 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        mNewNameString = mNewName.getText().toString();
-        mNewSurnameString = mNewSurname.getText().toString();
-        mMainActivity.editPreferences(mNewNameString, mNewSurnameString);
-        mMainActivity.initialisePreferences();
+        if (view == mDoneButton) {
+            mNewNameString = mNewName.getText().toString();
+            mNewSurnameString = mNewSurname.getText().toString();
+            mMainActivity.editPreferences(mNewNameString, mNewSurnameString);
+            mMainActivity.initialisePreferences();
 
-        setUserName(mMainActivity.getUserName(), mMainActivity.getUserSurname());
+            setUserName(mMainActivity.getUserName(), mMainActivity.getUserSurname());
 
-        setMessage();
-        cleanUI();
+            setMessage();
+            cleanUI();
+        }
     }
 
     private void cleanUI() {

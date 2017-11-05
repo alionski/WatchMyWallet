@@ -2,37 +2,24 @@ package se.mah.aliona.watchmywallet.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Bundle;
-
 import se.mah.aliona.watchmywallet.beans.Income;
 
 /**
+ * Repository for the table "income".
  * Created by aliona on 2017-09-11.
  */
 
-public class IncomeRepository {
-    public static final int CURSOR_ID = 2;
+class IncomeRepository {
     private DatabaseController ctrl;
-    private SQLiteOpenHelper dbHelper;
-    private String[] allColumns =
-            {Contract.Inc._ID,
-                    Contract.Inc.COLUMN_NAME_TITLE,
-                    Contract.Inc.COLUMN_NAME_AMOUNT,
-                    Contract.Inc.COLUMN_NAME_DATE,
-                    Contract.Inc.COLUMN_NAME_CATEGORY};
 
-    public IncomeRepository(DatabaseController ctrl) {
+    IncomeRepository(DatabaseController ctrl) {
         this.ctrl = ctrl;
     }
 
-    // db operations methods follow here
 
-    public void saveIncome(Income income) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    void saveIncome(Income income) {
+        SQLiteDatabase db = ctrl.getDatabase();
         ContentValues values = new ContentValues();
         values.put(Contract.Inc.COLUMN_NAME_TITLE, income.getIncTitle());
         values.put(Contract.Inc.COLUMN_NAME_AMOUNT, income.getIncAmount());
@@ -42,8 +29,8 @@ public class IncomeRepository {
         db.insert(Contract.Inc.TABLE_NAME, null, values);
     }
 
-    public Cursor getIncomeList() {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getIncomeList() {
+        SQLiteDatabase db = ctrl.getDatabase();
         String query = "SELECT income." + Contract.Inc._ID +  ", " +
                         "income." + Contract.Inc.COLUMN_NAME_TITLE + ", " +
                         "income." + Contract.Inc.COLUMN_NAME_AMOUNT + ", " +
@@ -56,12 +43,11 @@ public class IncomeRepository {
                         Contract.IncCats._ID +
                         " ORDER BY " + Contract.Inc.COLUMN_NAME_DATE+ " DESC";
 
-        Cursor cursor = db.rawQuery(query, null);
-        return cursor;
+        return db.rawQuery(query, null);
     }
 
-    public Cursor getIncomeList(int cat) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getIncomeList(int cat) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String[] params = new String[]{ String.valueOf(cat) };
         String query = "SELECT income." + Contract.Inc._ID +  ", " +
                     "income." + Contract.Inc.COLUMN_NAME_TITLE + ", " +
@@ -76,12 +62,11 @@ public class IncomeRepository {
                 " WHERE cats." + Contract.IncCats._ID + "=?" +
                 " ORDER BY " + Contract.Inc.COLUMN_NAME_DATE+ " DESC";
 
-        Cursor cursor = db.rawQuery(query, params);
-        return cursor;
+        return db.rawQuery(query, params);
     }
 
-    public Cursor getIncomeList(long start, long end) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getIncomeList(long start, long end) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String[] params = new String[]{ String.valueOf(start), String.valueOf(end) };
         String query = "SELECT income." + Contract.Inc._ID +  ", " +
                     "income." + Contract.Inc.COLUMN_NAME_TITLE + ", " +
@@ -98,12 +83,11 @@ public class IncomeRepository {
                     Contract.Inc.COLUMN_NAME_DATE + "<=?" +
                 " ORDER BY " + Contract.Inc.COLUMN_NAME_DATE+ " DESC";
 
-        Cursor cursor = db.rawQuery(query, params);
-        return cursor;
+        return db.rawQuery(query, params);
     }
 
-    public Cursor getIncomeList(int cat, long start, long end) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    Cursor getIncomeList(int cat, long start, long end) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String[] params = new String[]{ String.valueOf(cat), String.valueOf(start), String.valueOf(end) };
         String query = "SELECT income." + Contract.Inc._ID +  ", " +
                         "income." + Contract.Inc.COLUMN_NAME_TITLE + ", " +
@@ -120,12 +104,11 @@ public class IncomeRepository {
                         Contract.Inc.COLUMN_NAME_DATE + "<=?" +
                 " ORDER BY " + Contract.Inc.COLUMN_NAME_DATE+ " DESC";
 
-        Cursor cursor = db.rawQuery(query, params);
-        return cursor;
+        return db.rawQuery(query, params);
     }
 
-    public Income getIncome(int id) {
-        SQLiteDatabase db = ctrl.openDatabase();
+   Income getIncome(int id) {
+        SQLiteDatabase db = ctrl.getDatabase();
         Income inc = new Income();
         String[] params = new String[]{String.valueOf(id) };
         String query = "SELECT inc." + Contract.Inc._ID +  ", " +
@@ -149,13 +132,12 @@ public class IncomeRepository {
         inc.setIncAmount(cursor.getDouble(cursor.getColumnIndexOrThrow(Contract.Inc.COLUMN_NAME_AMOUNT)));
         inc.setIncDate(cursor.getLong(cursor.getColumnIndexOrThrow(Contract.Inc.COLUMN_NAME_DATE)));
         inc.setIncCat(cursor.getString(cursor.getColumnIndexOrThrow(Contract.IncCats.COLUMN_INC_CAT_NAME)));
-//        DatabaseUtils.dumpCursor(cursor);
         cursor.close();
         return inc;
     }
 
-    public void deleteIncome(int id) {
-        SQLiteDatabase db = ctrl.openDatabase();
+    void deleteIncome(int id) {
+        SQLiteDatabase db = ctrl.getDatabase();
         String params = String.valueOf(id);
         db.delete(Contract.Inc.TABLE_NAME, Contract.Inc._ID + "=" + params, null);
     }
